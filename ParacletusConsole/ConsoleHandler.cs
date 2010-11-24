@@ -12,14 +12,21 @@ namespace ParacletusConsole
 		public delegate void CommandHandlerFunction(string[] arguments);
 		Dictionary<string, CommandHandler> commandHandlerDictionary;
 
-		public ConsoleHandler(ConsoleForm newConsoleForm)
+		public ConsoleHandler(ConsoleForm consoleForm)
 		{
-			consoleForm = newConsoleForm;
 			consoleForm.consoleHandler = this;
+			this.consoleForm = consoleForm;
 
-			commandHandlerDictionary.Add("cd", this.changeDirectory);
+			commandHandlerDictionary = new Dictionary<string, CommandHandler>();
+			addCommand("cd", "<directory>", "change the working directory", this.changeDirectory, 1);
 
 			printPrompt();
+		}
+
+		void addCommand(string command, string argumentDescription, string description, CommandHandlerFunction function, int argumentCount)
+		{
+			CommandHandler handler = new CommandHandler(command, argumentDescription, description, function, argumentCount);
+			commandHandlerDictionary.Add(command, handler);
 		}
 
 		void printPrompt()
@@ -41,7 +48,6 @@ namespace ParacletusConsole
 
 		public void enter()
 		{
-			print("\n");
 			handleEnter();
 			printPrompt();
 			consoleForm.inputBox.SelectAll();
@@ -67,6 +73,7 @@ namespace ParacletusConsole
 		public void handleEnter()
 		{
 			string line = consoleForm.inputBox.Text;
+			print(line + "\n");
 			line = line.Trim();
 			if (line.Length == 0)
 				return;
@@ -85,7 +92,16 @@ namespace ParacletusConsole
 			}
 
 			if (commandHandlerDictionary.ContainsKey(arguments.command))
-				commandHandlerDictionary[arguments.command](arguments.arguments);
+			{
+				CommandHandler handler = commandHandlerDictionary[arguments.command];
+				if (arguments.arguments.Length != handler.argumentCount)
+				{
+					printLine("Invalid argument count.");
+					printLine(handler.usage());
+					return;
+				}
+				handler.function(arguments.arguments);
+			}
 			else
 			{
 				//got to check for executable programs matching that name now
