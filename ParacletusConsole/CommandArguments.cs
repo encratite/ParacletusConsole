@@ -60,5 +60,23 @@ namespace ParacletusConsole
 			command = tokens[0];
 			arguments = tokens.GetRange(1, tokens.Count - 1).ToArray();
 		}
+
+		public string getQuotedArguments()
+		{
+			string output = "";
+			bool first = true;
+			foreach (string argument in arguments)
+			{
+				if (first)
+					first = false;
+				else
+					output += " ";
+				if (argument.IndexOf(' ') == -1)
+					output += argument;
+				else
+					output += "\"" + argument + "\"";
+			}
+			return output;
+		}
 	}
 }
