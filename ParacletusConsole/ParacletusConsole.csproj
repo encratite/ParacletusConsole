@@ -46,34 +46,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="source\CommandArguments.cs" />
-    <Compile Include="source\CommandHandler.cs" />
-    <Compile Include="source\ConsoleHandler.cs" />
-    <Compile Include="source\ParacletusForm.cs">
+    <Compile Include="CommandArguments.cs" />
+    <Compile Include="CommandHandler.cs" />
+    <Compile Include="ConsoleHandler.cs" />
+    <Compile Include="ParacletusForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="source\ParacletusForm.Designer.cs">
-      <DependentUpon>source\ParacletusForm.cs</DependentUpon>
+    <Compile Include="ParacletusForm.Designer.cs">
+      <DependentUpon>ParacletusForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="source\Paracletus.cs" />
-    <Compile Include="properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="source\ParacletusForm.resx">
-      <DependentUpon>source\ParacletusForm.cs</DependentUpon>
+    <Compile Include="Paracletus.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="ParacletusForm.resx">
+      <DependentUpon>ParacletusForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="properties\Resources.resx">
+    <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="properties\Resources.Designer.cs">
+    <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="properties\Settings.settings">
+    <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Compile Include="properties\Settings.Designer.cs">
+    <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
