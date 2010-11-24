@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="source\CommandArguments.cs" />
+    <Compile Include="source\CommandHandler.cs" />
     <Compile Include="source\ConsoleHandler.cs" />
     <Compile Include="source\ParacletusForm.cs">
       <SubType>Form</SubType>

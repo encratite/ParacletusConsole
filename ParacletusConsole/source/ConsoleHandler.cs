@@ -9,10 +9,16 @@ namespace ParacletusConsole
 	{
 		ConsoleForm consoleForm;
 
+		public delegate void CommandHandlerFunction(string[] arguments);
+		Dictionary<string, CommandHandler> commandHandlerDictionary;
+
 		public ConsoleHandler(ConsoleForm newConsoleForm)
 		{
 			consoleForm = newConsoleForm;
 			consoleForm.consoleHandler = this;
+
+			commandHandlerDictionary.Add("cd", this.changeDirectory);
+
 			printPrompt();
 		}
 
@@ -53,6 +59,11 @@ namespace ParacletusConsole
 			printLine(output);
 		}
 
+		void changeDirectory(string[] arguments)
+		{
+			System.IO.Directory.SetCurrentDirectory(arguments[0]);
+		}
+
 		public void handleEnter()
 		{
 			string line = consoleForm.inputBox.Text;
@@ -60,14 +71,24 @@ namespace ParacletusConsole
 			if (line.Length == 0)
 				return;
 
+			CommandArguments arguments;
+
 			try
 			{
-				CommandArguments arguments = new CommandArguments(line);
-				visualiseArguments(arguments);
+				arguments = new CommandArguments(line);
+				//visualiseArguments(arguments);
 			}
 			catch (ArgumentException exception)
 			{
 				printLine(exception.Message);
+				return;
+			}
+
+			if (commandHandlerDictionary.ContainsKey(arguments.command))
+				commandHandlerDictionary[arguments.command](arguments.arguments);
+			else
+			{
+				//got to check for executable programs matching that name now
 			}
 		}
 	}
