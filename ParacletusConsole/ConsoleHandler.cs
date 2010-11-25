@@ -120,6 +120,7 @@ namespace ParacletusConsole
 
 		public void Enter()
 		{
+			Console.WriteLine("Enter()");
 			lock (this)
 			{
 				if (process == null)
@@ -147,6 +148,7 @@ namespace ParacletusConsole
 
 		void ProcessRegularEnter()
 		{
+			Console.WriteLine("ProcessRegularEnter()");
 			string line = consoleForm.inputBox.Text;
 			PrintLine(line);
 			line = line.Trim();
@@ -203,6 +205,8 @@ namespace ParacletusConsole
 
 					standardOutputReader = new AsynchronousReadHandler(this, HandleStandardOutputRead, process.StandardOutput);
 					standardErrorReader = new AsynchronousReadHandler(this, HandleStandardErrorRead, process.StandardError);
+
+					new Thread(ProcessTerminationHandler).Start();
 				}
 				catch (System.ComponentModel.Win32Exception exception)
 				{
@@ -214,6 +218,7 @@ namespace ParacletusConsole
 
 		void ProcessRuntimeEnter()
 		{
+			Console.WriteLine("ProcessRuntimeEnter()");
 			string line = consoleForm.inputBox.Text;
 			PrintLine(line);
 			process.StandardInput.WriteLine(line);

@@ -40,6 +40,8 @@ namespace ParacletusConsole
 			lock (consoleHandler)
 			{
 				int bytesRead = stream.BaseStream.EndRead(result);
+				if (bytesRead == 0)
+					return;
 				readHandler(buffer, bytesRead);
 				Read();
 			}
