@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConsoleForm));
 			this.consoleBox = new System.Windows.Forms.RichTextBox();
 			this.inputBox = new System.Windows.Forms.TextBox();
 			this.SuspendLayout();
@@ -69,6 +70,7 @@
 			this.Controls.Add(this.inputBox);
 			this.Controls.Add(this.consoleBox);
 			this.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "ConsoleForm";
 			this.Text = "Paracletus";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConsoleForm_FormClosing);
