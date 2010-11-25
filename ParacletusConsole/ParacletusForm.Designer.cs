@@ -34,14 +34,17 @@
 			// 
 			// consoleBox
 			// 
+			this.consoleBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.consoleBox.BackColor = System.Drawing.Color.Black;
 			this.consoleBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.consoleBox.ForeColor = System.Drawing.Color.White;
-			this.consoleBox.Location = new System.Drawing.Point(0, 1);
+			this.consoleBox.Location = new System.Drawing.Point(0, 0);
 			this.consoleBox.Name = "consoleBox";
 			this.consoleBox.ReadOnly = true;
 			this.consoleBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.consoleBox.Size = new System.Drawing.Size(630, 426);
+			this.consoleBox.Size = new System.Drawing.Size(632, 436);
 			this.consoleBox.TabIndex = 1;
 			this.consoleBox.Text = "";
 			// 
@@ -49,10 +52,11 @@
 			// 
 			this.inputBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
 			this.inputBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.inputBox.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.inputBox.ForeColor = System.Drawing.Color.White;
-			this.inputBox.Location = new System.Drawing.Point(10, 433);
+			this.inputBox.Location = new System.Drawing.Point(0, 442);
 			this.inputBox.Name = "inputBox";
-			this.inputBox.Size = new System.Drawing.Size(610, 11);
+			this.inputBox.Size = new System.Drawing.Size(632, 11);
 			this.inputBox.TabIndex = 0;
 			this.inputBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.inputBox_KeyPress);
 			// 

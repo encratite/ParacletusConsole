@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace ParacletusConsole
 {
@@ -37,9 +38,16 @@ namespace ParacletusConsole
 			print(prompt);
 		}
 
+		const int WM_VSCROLL = 0x115;
+		const int SB_BOTTOM = 7;
+
+		[DllImport("user32.dll")]
+		public static extern IntPtr SendMessage(IntPtr window, int message, int wparam, int lparam);
+
 		void print(string text)
 		{
 			consoleForm.consoleBox.AppendText(text);
+			SendMessage(consoleForm.consoleBox.Handle, WM_VSCROLL, SB_BOTTOM, 0);
 		}
 
 		void printLine(string line)
