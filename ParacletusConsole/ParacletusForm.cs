@@ -24,7 +24,7 @@ namespace ParacletusConsole
 			{
 				//suppress beep
 				keyEvent.Handled = true;
-				consoleHandler.enter();
+				consoleHandler.Enter();
 			}
 		}
 	}

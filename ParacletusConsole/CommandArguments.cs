@@ -57,7 +57,7 @@ namespace ParacletusConsole
 			arguments = tokens.GetRange(1, tokens.Count - 1).ToArray();
 		}
 
-		public string getQuotedArguments()
+		public string GetQuotedArguments()
 		{
 			string output = "";
 			bool first = true;

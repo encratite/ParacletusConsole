@@ -22,7 +22,7 @@ namespace ParacletusConsole
 			this.argumentCount = argumentCount;
 		}
 
-		public string usage()
+		public string Usage()
 		{
 			return command + " " + argumentDescription + " - " + description;
 		}
