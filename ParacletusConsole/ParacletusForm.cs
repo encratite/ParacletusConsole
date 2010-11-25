@@ -32,5 +32,10 @@ namespace ParacletusConsole
 		{
 			consoleHandler.FormLoaded();
 		}
+
+		private void ConsoleForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			consoleHandler.Closing();
+		}
 	}
 }

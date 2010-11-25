@@ -15,6 +15,7 @@ namespace ParacletusConsole
 
 		public delegate void CommandHandlerFunction(string[] arguments);
 		Dictionary<string, CommandHandler> commandHandlerDictionary;
+		bool terminating;
 
 		Process process;
 
@@ -27,6 +28,7 @@ namespace ParacletusConsole
 			consoleForm.consoleHandler = this;
 			this.consoleForm = consoleForm;
 			process = null;
+			terminating = false;
 
 			commandHandlerDictionary = new Dictionary<string, CommandHandler>();
 			AddCommand("cd", "<directory>", "change the working directory", this.ChangeDirectory, 1);
@@ -141,8 +143,11 @@ namespace ParacletusConsole
 			}
 			lock (this)
 			{
-				process = null;
-				PromptAndSelect();
+				if (!terminating)
+				{
+					process = null;
+					PromptAndSelect();
+				}
 			}
 		}
 
@@ -222,6 +227,16 @@ namespace ParacletusConsole
 			string line = consoleForm.inputBox.Text;
 			PrintLine(line);
 			process.StandardInput.WriteLine(line);
+		}
+
+		public void Closing()
+		{
+			lock (this)
+			{
+				terminating = true;
+				if (process != null)
+					process.Kill();
+			}
 		}
 	}
 }
