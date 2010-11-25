@@ -27,5 +27,10 @@ namespace ParacletusConsole
 				consoleHandler.Enter();
 			}
 		}
+
+		private void ConsoleForm_Load(object sender, EventArgs e)
+		{
+			consoleHandler.FormLoaded();
+		}
 	}
 }

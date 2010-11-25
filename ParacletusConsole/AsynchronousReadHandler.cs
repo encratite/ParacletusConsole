@@ -26,6 +26,8 @@ namespace ParacletusConsole
 
 			buffer = new byte[ReadSize];
 			callback = new AsyncCallback(ReadCallback);
+
+			Read();
 		}
 
 		void Read()

@@ -71,6 +71,7 @@
 			this.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Name = "ConsoleForm";
 			this.Text = "Paracletus";
+			this.Load += new System.EventHandler(this.ConsoleForm_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

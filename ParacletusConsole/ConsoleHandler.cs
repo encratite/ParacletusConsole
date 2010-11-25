@@ -5,6 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace ParacletusConsole
 {
@@ -29,7 +30,10 @@ namespace ParacletusConsole
 
 			commandHandlerDictionary = new Dictionary<string, CommandHandler>();
 			AddCommand("cd", "<directory>", "change the working directory", this.ChangeDirectory, 1);
+		}
 
+		public void FormLoaded()
+		{
 			PrintPrompt();
 		}
 
@@ -54,20 +58,19 @@ namespace ParacletusConsole
 
 		void Print(string text)
 		{
-			consoleForm.consoleBox.AppendText(text);
-			SendMessage(consoleForm.consoleBox.Handle, WM_VSCROLL, SB_BOTTOM, 0);
+			consoleForm.consoleBox.Invoke
+			(
+				(MethodInvoker) delegate
+				{
+					consoleForm.consoleBox.AppendText(text);
+					SendMessage(consoleForm.consoleBox.Handle, WM_VSCROLL, SB_BOTTOM, 0);
+				}
+			);
 		}
 
 		void PrintLine(string line)
 		{
 			Print(line + "\n");
-		}
-
-		public void Enter()
-		{
-			HandleEnter();
-			PrintPrompt();
-			consoleForm.inputBox.SelectAll();
 		}
 
 		void VisualiseArguments(CommandArguments arguments)
@@ -103,13 +106,55 @@ namespace ParacletusConsole
 			PrintBuffer(buffer, bytesRead);
 		}
 
-		public void HandleEnter()
+		void PromptAndSelect()
+		{
+			PrintPrompt();
+			consoleForm.inputBox.Invoke
+			(
+				(MethodInvoker)delegate
+				{
+					consoleForm.inputBox.SelectAll();
+				}
+			);
+		}
+
+		public void Enter()
+		{
+			lock (this)
+			{
+				if (process == null)
+					ProcessRegularEnter();
+				else
+					ProcessRuntimeEnter();
+			}
+		}
+
+		void ProcessTerminationHandler()
+		{
+			try
+			{
+				process.WaitForExit();
+			}
+			catch (NullReferenceException)
+			{
+			}
+			lock (this)
+			{
+				process = null;
+				PromptAndSelect();
+			}
+		}
+
+		void ProcessRegularEnter()
 		{
 			string line = consoleForm.inputBox.Text;
-			Print(line + "\n");
+			PrintLine(line);
 			line = line.Trim();
 			if (line.Length == 0)
+			{
+				PromptAndSelect();
 				return;
+			}
 
 			CommandArguments arguments;
 
@@ -121,6 +166,7 @@ namespace ParacletusConsole
 			catch (ArgumentException exception)
 			{
 				PrintLine(exception.Message);
+				PromptAndSelect();
 				return;
 			}
 
@@ -131,40 +177,46 @@ namespace ParacletusConsole
 				{
 					PrintLine("Invalid argument count.");
 					PrintLine(handler.Usage());
-					return;
 				}
-				handler.function(arguments.arguments);
+				else
+					handler.function(arguments.arguments);
+				PromptAndSelect();
 			}
 			else
 			{
-				lock (this)
+				try
 				{
-					try
-					{
-						//check for executable programs matching that name
-						process = new Process();
+					//check for executable programs matching that name
+					process = new Process();
 
-						ProcessStartInfo info = process.StartInfo;
-						info.UseShellExecute = false;
-						info.RedirectStandardInput = true;
-						info.RedirectStandardOutput = true;
-						info.RedirectStandardError = true;
-						info.FileName = arguments.command;
-						info.Arguments = arguments.GetQuotedArguments();
-						info.WindowStyle = ProcessWindowStyle.Hidden;
-						info.CreateNoWindow = true;
+					ProcessStartInfo info = process.StartInfo;
+					info.UseShellExecute = false;
+					info.RedirectStandardInput = true;
+					info.RedirectStandardOutput = true;
+					info.RedirectStandardError = true;
+					info.FileName = arguments.command;
+					info.Arguments = arguments.GetQuotedArguments();
+					info.WindowStyle = ProcessWindowStyle.Hidden;
+					info.CreateNoWindow = true;
 
-						process.Start();
+					process.Start();
 
-						standardOutputReader = new AsynchronousReadHandler(this, HandleStandardOutputRead, process.StandardOutput);
-						standardErrorReader = new AsynchronousReadHandler(this, HandleStandardErrorRead, process.StandardError);
-					}
-					catch (System.ComponentModel.Win32Exception exception)
-					{
-						PrintLine(exception.Message);
-					}
+					standardOutputReader = new AsynchronousReadHandler(this, HandleStandardOutputRead, process.StandardOutput);
+					standardErrorReader = new AsynchronousReadHandler(this, HandleStandardErrorRead, process.StandardError);
+				}
+				catch (System.ComponentModel.Win32Exception exception)
+				{
+					PrintLine(exception.Message);
+					PromptAndSelect();
 				}
 			}
+		}
+
+		void ProcessRuntimeEnter()
+		{
+			string line = consoleForm.inputBox.Text;
+			PrintLine(line);
+			process.StandardInput.WriteLine(line);
 		}
 	}
 }
