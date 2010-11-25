@@ -20,12 +20,7 @@ namespace ParacletusConsole
 
 		private void inputBox_KeyPress(object sender, KeyPressEventArgs keyEvent)
 		{
-			if (keyEvent.KeyChar == '\r')
-			{
-				//suppress beep
-				keyEvent.Handled = true;
-				consoleHandler.Enter();
-			}
+			consoleHandler.KeyPressed(keyEvent);
 		}
 
 		private void ConsoleForm_Load(object sender, EventArgs e)

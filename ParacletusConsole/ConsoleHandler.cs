@@ -143,11 +143,9 @@ namespace ParacletusConsole
 			}
 			lock (this)
 			{
+				process = null;
 				if (!terminating)
-				{
-					process = null;
 					PromptAndSelect();
-				}
 			}
 		}
 
@@ -234,8 +232,39 @@ namespace ParacletusConsole
 			lock (this)
 			{
 				terminating = true;
-				if (process != null)
-					process.Kill();
+				KillProcess();
+			}
+		}
+
+		void KillProcess()
+		{
+			if (process != null)
+				process.Kill();
+		}
+
+		void Escape()
+		{
+			lock (this)
+			{
+				PrintLine("Process has been terminated");
+				KillProcess();
+			}
+		}
+
+		public void KeyPressed(KeyPressEventArgs keyEvent)
+		{
+			switch(keyEvent.KeyChar)
+			{
+				case '\r':
+					//suppress beep
+					keyEvent.Handled = true;
+					Enter();
+					break;
+
+				case '\x1b':
+					keyEvent.Handled = true;
+					Escape();
+					break;
 			}
 		}
 	}
