@@ -16,6 +16,7 @@ namespace ParacletusConsole
 		public delegate void CommandHandlerFunction(string[] arguments);
 		Dictionary<string, CommandHandler> commandHandlerDictionary;
 		bool terminating;
+		bool writable;
 
 		Process process;
 
@@ -29,6 +30,7 @@ namespace ParacletusConsole
 			this.consoleForm = consoleForm;
 			process = null;
 			terminating = false;
+			writable = false;
 
 			commandHandlerDictionary = new Dictionary<string, CommandHandler>();
 			AddCommand("cd", "<directory>", "change the working directory", this.ChangeDirectory, 1);
@@ -144,6 +146,7 @@ namespace ParacletusConsole
 			lock (this)
 			{
 				process = null;
+				writable = false;
 				if (!terminating)
 					PromptAndSelect();
 			}
@@ -191,6 +194,8 @@ namespace ParacletusConsole
 			{
 				try
 				{
+					writable = false;
+
 					//check for executable programs matching that name
 					process = new Process();
 
@@ -210,9 +215,13 @@ namespace ParacletusConsole
 					standardErrorReader = new AsynchronousReadHandler(this, HandleStandardErrorRead, process.StandardError);
 
 					new Thread(ProcessTerminationHandler).Start();
+
+					writable = true;
 				}
 				catch (System.ComponentModel.Win32Exception exception)
 				{
+					process = null;
+					writable = false;
 					PrintLine(exception.Message);
 					PromptAndSelect();
 				}
@@ -221,10 +230,13 @@ namespace ParacletusConsole
 
 		void ProcessRuntimeEnter()
 		{
-			Console.WriteLine("ProcessRuntimeEnter()");
-			string line = consoleForm.inputBox.Text;
-			PrintLine(line);
-			process.StandardInput.WriteLine(line);
+			if (writable)
+			{
+				Console.WriteLine("ProcessRuntimeEnter()");
+				string line = consoleForm.inputBox.Text;
+				PrintLine(line);
+				process.StandardInput.WriteLine(line);
+			}
 		}
 
 		public void Closing()
