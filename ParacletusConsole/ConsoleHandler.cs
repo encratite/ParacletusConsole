@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
-using System.IO;
-using System.IO.Pipes;
 
 namespace ParacletusConsole
 {
@@ -107,21 +105,28 @@ namespace ParacletusConsole
 			}
 			else
 			{
-				//check for executable programs matching that name
-				Process process = new Process();
+				try
+				{
+					//check for executable programs matching that name
+					Process process = new Process();
 
-				ProcessStartInfo info = process.StartInfo;
-				info.UseShellExecute = false;
-				info.RedirectStandardOutput = true;
-				info.FileName = arguments.command;
-				info.Arguments = arguments.getQuotedArguments();
-				info.WindowStyle = ProcessWindowStyle.Hidden;
-				info.CreateNoWindow = true;
+					ProcessStartInfo info = process.StartInfo;
+					info.UseShellExecute = false;
+					info.RedirectStandardOutput = true;
+					info.FileName = arguments.command;
+					info.Arguments = arguments.getQuotedArguments();
+					info.WindowStyle = ProcessWindowStyle.Hidden;
+					info.CreateNoWindow = true;
 
-				process.Start();
-				string output = process.StandardOutput.ReadToEnd();
-				process.WaitForExit();
-				printLine(output);
+					process.Start();
+					string output = process.StandardOutput.ReadToEnd();
+					process.WaitForExit();
+					printLine(output);
+				}
+				catch (System.ComponentModel.Win32Exception exception)
+				{
+					printLine(exception.Message);
+				}
 			}
 		}
 	}
