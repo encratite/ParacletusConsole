@@ -14,7 +14,6 @@ namespace ParacletusConsole
 		{
 			List<string> tokens = new List<string>();
 			string currenToken = "";
-			bool newToken = true;
 			bool quoteMode = false;
 			char lastChar = '\x00';
 			for(int i = 0; i < line.Length; i++)
@@ -29,7 +28,6 @@ namespace ParacletusConsole
 						{
 							if(currenToken.Length > 0)
 							{
-								newToken = true;
 								tokens.Add(currenToken);
 								currenToken = "";
 							}
@@ -38,13 +36,11 @@ namespace ParacletusConsole
 
 					case '"':
 						quoteMode = !quoteMode;
-						newToken = false;
 						break;
 
 					default:
 						if (i > 0 && lastChar == '"')
 							throw new ArgumentException("Encountered a printable character after a terminating quote");
-						newToken = false;
 						currenToken += input;
 						break;
 				}
