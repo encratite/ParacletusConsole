@@ -19,6 +19,8 @@ namespace ParacletusConsole
 			for(int i = 0; i < line.Length; i++)
 			{
 				char input = line[i];
+				bool wasQuote = i > 0 && lastChar == '"';
+				bool quoteError = !quoteMode && wasQuote;
 				switch (input)
 				{
 					case ' ':
@@ -35,11 +37,13 @@ namespace ParacletusConsole
 						break;
 
 					case '"':
+						if (quoteError)
+							throw new ArgumentException("Encountered a quote right after a terminating quote");
 						quoteMode = !quoteMode;
 						break;
 
 					default:
-						if (i > 0 && lastChar == '"')
+						if (quoteError)
 							throw new ArgumentException("Encountered a printable character after a terminating quote");
 						currenToken += input;
 						break;
