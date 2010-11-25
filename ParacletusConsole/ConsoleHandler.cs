@@ -17,6 +17,10 @@ namespace ParacletusConsole
 
 		Process process;
 
+		AsynchronousReadHandler
+			standardOutputReader,
+			standardErrorReader;
+
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
 			consoleForm.consoleHandler = this;
@@ -89,6 +93,16 @@ namespace ParacletusConsole
 			Print(data);
 		}
 
+		public void HandleStandardOutputRead(byte[] buffer, int bytesRead)
+		{
+			PrintBuffer(buffer, bytesRead);
+		}
+
+		public void HandleStandardErrorRead(byte[] buffer, int bytesRead)
+		{
+			PrintBuffer(buffer, bytesRead);
+		}
+
 		public void HandleEnter()
 		{
 			string line = consoleForm.inputBox.Text;
@@ -141,6 +155,9 @@ namespace ParacletusConsole
 						info.CreateNoWindow = true;
 
 						process.Start();
+
+						standardOutputReader = new AsynchronousReadHandler(this, HandleStandardOutputRead, process.StandardOutput);
+						standardErrorReader = new AsynchronousReadHandler(this, HandleStandardErrorRead, process.StandardError);
 					}
 					catch (System.ComponentModel.Win32Exception exception)
 					{

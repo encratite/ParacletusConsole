@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsynchronousReadHandler.cs" />
     <Compile Include="CommandArguments.cs" />
     <Compile Include="CommandHandler.cs" />
     <Compile Include="ConsoleHandler.cs" />
