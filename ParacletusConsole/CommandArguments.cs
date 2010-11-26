@@ -7,8 +7,8 @@ namespace ParacletusConsole
 {
 	class CommandArguments
 	{
-		public string command;
-		public string[] arguments;
+		public string Command;
+		public string[] Arguments;
 
 		public CommandArguments(string line)
 		{
@@ -57,15 +57,15 @@ namespace ParacletusConsole
 			if (currenToken.Length > 0)
 				tokens.Add(currenToken);
 
-			command = tokens[0];
-			arguments = tokens.GetRange(1, tokens.Count - 1).ToArray();
+			Command = tokens[0];
+			Arguments = tokens.GetRange(1, tokens.Count - 1).ToArray();
 		}
 
 		public string GetQuotedArguments()
 		{
 			string output = "";
 			bool first = true;
-			foreach (string argument in arguments)
+			foreach (string argument in Arguments)
 			{
 				if (first)
 					first = false;

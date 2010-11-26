@@ -10,39 +10,39 @@ namespace ParacletusConsole
 	{
 		public delegate void ReadHandler(byte[] buffer, int bytesRead);
 
-		ConsoleHandler consoleHandler;
-		StreamReader stream;
-		AsyncCallback callback;
-		ReadHandler readHandler;
+		ConsoleHandler ConsoleHandler;
+		StreamReader Stream;
+		AsyncCallback Callback;
+		ReadHandler DelegateInstance;
 
 		const int ReadSize = 1024;
-		byte[] buffer;
+		byte[] Buffer;
 
 		public AsynchronousReadHandler(ConsoleHandler consoleHandler, ReadHandler readHandler, StreamReader stream)
 		{
-			this.consoleHandler = consoleHandler;
-			this.readHandler = readHandler;
-			this.stream = stream;
+			this.ConsoleHandler = consoleHandler;
+			this.DelegateInstance = readHandler;
+			this.Stream = stream;
 
-			buffer = new byte[ReadSize];
-			callback = new AsyncCallback(ReadCallback);
+			Buffer = new byte[ReadSize];
+			Callback = new AsyncCallback(ReadCallback);
 
 			Read();
 		}
 
 		void Read()
 		{
-			stream.BaseStream.BeginRead(buffer, 0, ReadSize, callback, null);
+			Stream.BaseStream.BeginRead(Buffer, 0, ReadSize, Callback, null);
 		}
 
 		void ReadCallback(IAsyncResult result)
 		{
-			lock (consoleHandler)
+			lock (ConsoleHandler)
 			{
-				int bytesRead = stream.BaseStream.EndRead(result);
+				int bytesRead = Stream.BaseStream.EndRead(result);
 				if (bytesRead == 0)
 					return;
-				readHandler(buffer, bytesRead);
+				DelegateInstance(Buffer, bytesRead);
 				Read();
 			}
 		}

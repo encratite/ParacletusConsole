@@ -11,40 +11,41 @@ namespace ParacletusConsole
 {
 	public class ConsoleHandler
 	{
-		ConsoleForm consoleForm;
+		ConsoleForm MainForm;
 
 		public delegate void CommandHandlerFunction(string[] arguments);
-		Dictionary<string, CommandHandler> commandHandlerDictionary;
-		bool terminating;
-		bool writable;
+		Dictionary<string, CommandHandler> CommandHandlerDictionary;
+		bool Terminating;
+		bool Writable;
 
-		Process process;
+		Process Process;
 
 		AsynchronousReadHandler
-			standardOutputReader,
-			standardErrorReader;
+			StandardOutputReader,
+			StandardErrorReader;
 
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
 			consoleForm.consoleHandler = this;
-			this.consoleForm = consoleForm;
-			process = null;
-			terminating = false;
-			writable = false;
+			this.MainForm = consoleForm;
+			Process = null;
+			Terminating = false;
+			Writable = false;
 
-			commandHandlerDictionary = new Dictionary<string, CommandHandler>();
+			CommandHandlerDictionary = new Dictionary<string, CommandHandler>();
 			AddCommand("cd", "<directory>", "change the working directory", this.ChangeDirectory, 1);
 		}
 
 		public void FormLoaded()
 		{
 			PrintPrompt();
+
 		}
 
 		void AddCommand(string command, string argumentDescription, string description, CommandHandlerFunction function, int argumentCount)
 		{
 			CommandHandler handler = new CommandHandler(command, argumentDescription, description, function, argumentCount);
-			commandHandlerDictionary.Add(command, handler);
+			CommandHandlerDictionary.Add(command, handler);
 		}
 
 		void PrintPrompt()
@@ -62,12 +63,12 @@ namespace ParacletusConsole
 
 		void Print(string text)
 		{
-			consoleForm.consoleBox.Invoke
+			MainForm.consoleBox.Invoke
 			(
 				(MethodInvoker) delegate
 				{
-					consoleForm.consoleBox.AppendText(text);
-					SendMessage(consoleForm.consoleBox.Handle, WM_VSCROLL, SB_BOTTOM, 0);
+					MainForm.consoleBox.AppendText(text);
+					SendMessage(MainForm.consoleBox.Handle, WM_VSCROLL, SB_BOTTOM, 0);
 				}
 			);
 		}
@@ -79,11 +80,11 @@ namespace ParacletusConsole
 
 		void VisualiseArguments(CommandArguments arguments)
 		{
-			PrintLine("Command: \"" + arguments.command + "\"");
+			PrintLine("Command: \"" + arguments.Command + "\"");
 			string output = "Arguments:";
-			for (int i = 0; i < arguments.arguments.Length; i++)
+			for (int i = 0; i < arguments.Arguments.Length; i++)
 			{
-				string argument = arguments.arguments[i];
+				string argument = arguments.Arguments[i];
 				output += " " + (i + 1).ToString() + ". \"" + argument + "\"";
 			}
 			PrintLine(output);
@@ -113,11 +114,11 @@ namespace ParacletusConsole
 		void PromptAndSelect()
 		{
 			PrintPrompt();
-			consoleForm.inputBox.Invoke
+			MainForm.inputBox.Invoke
 			(
 				(MethodInvoker)delegate
 				{
-					consoleForm.inputBox.SelectAll();
+					MainForm.inputBox.SelectAll();
 				}
 			);
 		}
@@ -127,7 +128,7 @@ namespace ParacletusConsole
 			Console.WriteLine("Enter()");
 			lock (this)
 			{
-				if (process == null)
+				if (Process == null)
 					ProcessRegularEnter();
 				else
 					ProcessRuntimeEnter();
@@ -138,16 +139,16 @@ namespace ParacletusConsole
 		{
 			try
 			{
-				process.WaitForExit();
+				Process.WaitForExit();
 			}
 			catch (NullReferenceException)
 			{
 			}
 			lock (this)
 			{
-				process = null;
-				writable = false;
-				if (!terminating)
+				Process = null;
+				Writable = false;
+				if (!Terminating)
 					PromptAndSelect();
 			}
 		}
@@ -155,7 +156,7 @@ namespace ParacletusConsole
 		void ProcessRegularEnter()
 		{
 			Console.WriteLine("ProcessRegularEnter()");
-			string line = consoleForm.inputBox.Text;
+			string line = MainForm.inputBox.Text;
 			PrintLine(line);
 			line = line.Trim();
 			if (line.Length == 0)
@@ -178,50 +179,50 @@ namespace ParacletusConsole
 				return;
 			}
 
-			if (commandHandlerDictionary.ContainsKey(arguments.command))
+			if (CommandHandlerDictionary.ContainsKey(arguments.Command))
 			{
-				CommandHandler handler = commandHandlerDictionary[arguments.command];
-				if (arguments.arguments.Length != handler.argumentCount)
+				CommandHandler handler = CommandHandlerDictionary[arguments.Command];
+				if (arguments.Arguments.Length != handler.ArgumentCount)
 				{
 					PrintLine("Invalid argument count.");
 					PrintLine(handler.Usage());
 				}
 				else
-					handler.function(arguments.arguments);
+					handler.Function(arguments.Arguments);
 				PromptAndSelect();
 			}
 			else
 			{
 				try
 				{
-					writable = false;
+					Writable = false;
 
 					//check for executable programs matching that name
-					process = new Process();
+					Process = new Process();
 
-					ProcessStartInfo info = process.StartInfo;
+					ProcessStartInfo info = Process.StartInfo;
 					info.UseShellExecute = false;
 					info.RedirectStandardInput = true;
 					info.RedirectStandardOutput = true;
 					info.RedirectStandardError = true;
-					info.FileName = arguments.command;
+					info.FileName = arguments.Command;
 					info.Arguments = arguments.GetQuotedArguments();
 					info.WindowStyle = ProcessWindowStyle.Hidden;
 					info.CreateNoWindow = true;
 
-					process.Start();
+					Process.Start();
 
-					standardOutputReader = new AsynchronousReadHandler(this, HandleStandardOutputRead, process.StandardOutput);
-					standardErrorReader = new AsynchronousReadHandler(this, HandleStandardErrorRead, process.StandardError);
+					StandardOutputReader = new AsynchronousReadHandler(this, HandleStandardOutputRead, Process.StandardOutput);
+					StandardErrorReader = new AsynchronousReadHandler(this, HandleStandardErrorRead, Process.StandardError);
 
 					new Thread(ProcessTerminationHandler).Start();
 
-					writable = true;
+					Writable = true;
 				}
 				catch (System.ComponentModel.Win32Exception exception)
 				{
-					process = null;
-					writable = false;
+					Process = null;
+					Writable = false;
 					PrintLine(exception.Message);
 					PromptAndSelect();
 				}
@@ -230,12 +231,12 @@ namespace ParacletusConsole
 
 		void ProcessRuntimeEnter()
 		{
-			if (writable)
+			if (Writable)
 			{
 				Console.WriteLine("ProcessRuntimeEnter()");
-				string line = consoleForm.inputBox.Text;
+				string line = MainForm.inputBox.Text;
 				PrintLine(line);
-				process.StandardInput.WriteLine(line);
+				Process.StandardInput.WriteLine(line);
 			}
 		}
 
@@ -243,15 +244,15 @@ namespace ParacletusConsole
 		{
 			lock (this)
 			{
-				terminating = true;
+				Terminating = true;
 				KillProcess();
 			}
 		}
 
 		void KillProcess()
 		{
-			if (process != null)
-				process.Kill();
+			if (Process != null)
+				Process.Kill();
 		}
 
 		void Escape()

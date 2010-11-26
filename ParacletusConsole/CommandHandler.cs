@@ -7,24 +7,24 @@ namespace ParacletusConsole
 {
 	public class CommandHandler
 	{
-		public string command;
-		public string description;
-		public string argumentDescription;
-		public ConsoleHandler.CommandHandlerFunction function;
-		public int argumentCount;
+		public string Command;
+		public string Description;
+		public string ArgumentDescription;
+		public ConsoleHandler.CommandHandlerFunction Function;
+		public int ArgumentCount;
 
 		public CommandHandler(string command, string argumentDescription,  string description, ConsoleHandler.CommandHandlerFunction function, int argumentCount)
 		{
-			this.command = command;
-			this.argumentDescription = argumentDescription;
-			this.description = description;
-			this.function = function;
-			this.argumentCount = argumentCount;
+			this.Command = command;
+			this.ArgumentDescription = argumentDescription;
+			this.Description = description;
+			this.Function = function;
+			this.ArgumentCount = argumentCount;
 		}
 
 		public string Usage()
 		{
-			return command + " " + argumentDescription + " - " + description;
+			return Command + " " + ArgumentDescription + " - " + Description;
 		}
 	}
 }
