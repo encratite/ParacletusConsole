@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Threading;
 
 namespace ParacletusConsole
 {
@@ -10,6 +11,8 @@ namespace ParacletusConsole
 	{
 		public delegate void ReadHandler(byte[] buffer, int bytesRead);
 		public delegate void CloseHandler();
+
+		public AutoResetEvent CloseEvent;
 
 		ConsoleHandler ConsoleHandler;
 		StreamReader Stream;
@@ -25,11 +28,13 @@ namespace ParacletusConsole
 		{
 			ConsoleHandler = consoleHandler;
 			ReadDelegate = readHandler;
-			CloseDelegate = CloseDelegate;
+			CloseDelegate = closeHandler;
 			Stream = stream;
 
 			Buffer = new byte[ReadSize];
 			Callback = new AsyncCallback(ReadCallback);
+
+			CloseEvent = new AutoResetEvent(false);
 
 			Read();
 		}
@@ -45,7 +50,10 @@ namespace ParacletusConsole
 			{
 				int bytesRead = Stream.BaseStream.EndRead(result);
 				if (bytesRead == 0)
+				{
+					CloseEvent.Set();
 					return;
+				}
 				ReadDelegate(Buffer, bytesRead);
 				Read();
 			}

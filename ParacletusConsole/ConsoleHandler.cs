@@ -307,7 +307,7 @@ namespace ParacletusConsole
 			}
 		}
 
-		void ProcessTerminationHandler()
+		void ProcessTermination()
 		{
 			try
 			{
@@ -315,6 +315,11 @@ namespace ParacletusConsole
 			}
 			catch (NullReferenceException)
 			{
+			}
+			if (ProcessIOActive)
+			{
+				StandardOutputReader.CloseEvent.WaitOne();
+				StandardErrorReader.CloseEvent.WaitOne();
 			}
 			lock (this)
 			{
@@ -393,7 +398,7 @@ namespace ParacletusConsole
 				StandardOutputReader = new AsynchronousReader(this, HandleStandardOutputRead, HandleStandardOutputClose, Process.StandardOutput);
 				StandardErrorReader = new AsynchronousReader(this, HandleStandardErrorRead, HandleStandardErrorClose, Process.StandardError);
 
-				new Thread(ProcessTerminationHandler).Start();
+				new Thread(ProcessTermination).Start();
 
 				ProcessIOActive = true;
 			}
