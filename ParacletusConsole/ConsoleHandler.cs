@@ -102,8 +102,7 @@ namespace ParacletusConsole
 		void PrintPrompt()
 		{
 			UpdateWorkingDirectory();
-			string prompt = ReplaceVariables(ProgramConfiguration.Prompt);
-			PrintWithColours(prompt);
+			FormattedPrinting(ProgramConfiguration.Prompt);
 		}
 
 		const int WM_VSCROLL = 0x115;
@@ -151,14 +150,14 @@ namespace ParacletusConsole
 			return output;
 		}
 
-		void PrintWithColours(string input)
+		void FormattedPrinting(string input, bool useVariables = true, bool useColours = true)
 		{
 			string currentOutput = "";
 
 			for (int i = 0; i < input.Length; )
 			{
 				char currentChar = input[i];
-				if (currentChar == ColourIdentifier)
+				if (useColours && currentChar == ColourIdentifier)
 				{
 					int offset = i + 1;
 					if (offset + HexCodeTotalSize >= input.Length)
@@ -185,27 +184,14 @@ namespace ParacletusConsole
 						continue;
 					}
 				}
-				else
-					currentOutput += currentChar;
-				i++;
-			}
-			Print(currentOutput);
-		}
-
-		string ReplaceVariables(string input)
-		{
-			StringBuilder output = new StringBuilder();
-			for(int i = 0; i < input.Length;)
-			{
-				char currentChar = input[i];
-				if (currentChar == VariableSeparator)
+				else if (useVariables && currentChar == VariableSeparator)
 				{
 					int start = i + 1;
 					int offset = input.IndexOf(VariableSeparator, start);
 					if (offset == -1)
 					{
 						//error: the user failed to specify a terminating separator, just print it anyways
-						output.Append(currentChar);
+						currentOutput += currentChar;
 					}
 					else
 					{
@@ -214,22 +200,22 @@ namespace ParacletusConsole
 						if (variable.Length == 0)
 						{
 							//it's a double separator - print the separator instead
-							output.Append(VariableSeparator);
+							currentOutput += VariableSeparator;
 							continue;
 						}
 						if (VariableDictionary.ContainsKey(variable))
-							output.Append(VariableDictionary[variable]);
+							currentOutput += VariableDictionary[variable];
 						else
 							//error: the user has specified an invalid variable name, just append a warning string instead
-							output.Append("Unknown");
+							currentOutput += "Unknown";
 						continue;
 					}
 				}
 				else
-					output.Append(currentChar);
+					currentOutput += currentChar;
 				i++;
 			}
-			return output.ToString();
+			Print(currentOutput);
 		}
 
 		void VisualiseArguments(CommandArguments arguments)
