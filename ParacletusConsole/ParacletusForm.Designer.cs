@@ -47,6 +47,7 @@
 			this.ConsoleBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
 			this.ConsoleBox.Size = new System.Drawing.Size(632, 436);
 			this.ConsoleBox.TabIndex = 1;
+			this.ConsoleBox.TabStop = false;
 			this.ConsoleBox.Text = "";
 			// 
 			// InputBox
@@ -59,6 +60,7 @@
 			this.InputBox.Name = "InputBox";
 			this.InputBox.Size = new System.Drawing.Size(632, 11);
 			this.InputBox.TabIndex = 0;
+			this.InputBox.TabStop = false;
 			this.InputBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.inputBox_KeyPress);
 			// 
 			// ConsoleForm

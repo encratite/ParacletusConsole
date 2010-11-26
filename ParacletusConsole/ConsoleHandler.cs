@@ -13,6 +13,7 @@ namespace ParacletusConsole
 {
 	public class ConsoleHandler
 	{
+		delegate void KeyPressHandler();
 		ConsoleForm MainForm;
 
 		public delegate void CommandHandlerFunction(string[] arguments);
@@ -36,6 +37,8 @@ namespace ParacletusConsole
 		private const char VariableSeparator = '$';
 		private const char ColourIdentifier = '#';
 
+		Dictionary<char, KeyPressHandler> KeyPressHandlerDictionary;
+
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
 			consoleForm.ConsoleHandler = this;
@@ -48,9 +51,18 @@ namespace ParacletusConsole
 
 			LoadConfiguration();
 			InitialiseVariableDictionary();
+			InitialiseKeyPressHandlerDictionary();
 
 			CommandHandlerDictionary = new Dictionary<string, CommandHandler>();
 			AddCommand("cd", "<directory>", "change the working directory", this.ChangeDirectory, 1);
+		}
+
+		void InitialiseKeyPressHandlerDictionary()
+		{
+			KeyPressHandlerDictionary = new Dictionary<char, KeyPressHandler>();
+			KeyPressHandlerDictionary['\r'] = Enter;
+			KeyPressHandlerDictionary['\t'] = Tab;
+			KeyPressHandlerDictionary['\x1b'] = Escape;
 		}
 
 		void InitialiseVariableDictionary()
@@ -107,6 +119,7 @@ namespace ParacletusConsole
 			if (GotConfiguration)
 				ProgramConfiguration.FormState.Apply(MainForm);
 			PrintPrompt();
+			MainForm.InputBox.Focus();
 		}
 
 		void AddCommand(string command, string argumentDescription, string description, CommandHandlerFunction function, int argumentCount)
@@ -484,20 +497,16 @@ namespace ParacletusConsole
 			}
 		}
 
+		void Tab()
+		{
+		}
+
 		public void KeyPressed(KeyPressEventArgs keyEvent)
 		{
-			switch(keyEvent.KeyChar)
+			if (KeyPressHandlerDictionary.ContainsKey(keyEvent.KeyChar))
 			{
-				case '\r':
-					//suppress beep
-					keyEvent.Handled = true;
-					Enter();
-					break;
-
-				case '\x1b':
-					keyEvent.Handled = true;
-					Escape();
-					break;
+				keyEvent.Handled = true;
+				KeyPressHandlerDictionary[keyEvent.KeyChar]();
 			}
 		}
 	}
