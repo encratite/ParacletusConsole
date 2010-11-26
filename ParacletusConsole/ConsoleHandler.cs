@@ -67,6 +67,9 @@ namespace ParacletusConsole
 		{
 			CurrentWorkingDirectory = System.IO.Directory.GetCurrentDirectory();
 			VariableDictionary["CurrentWorkingDirectory"] = CurrentWorkingDirectory;
+			string[] tokens = CurrentWorkingDirectory.Split(Path.DirectorySeparatorChar);
+			string folder = tokens[tokens.Length - 1];
+			VariableDictionary["CurrentWorkingDirectoryWithoutPath"] = folder;
 		}
 
 		void LoadConfiguration()
