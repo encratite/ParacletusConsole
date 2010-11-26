@@ -10,7 +10,6 @@ namespace ParacletusConsole
 		public static string ConfigurationFile = "Paracletus.xml";
 
 		public string Prompt;
-		public Nil.FormState FormState;
 
 		public SerialisableColour
 			CommandTextInputColour,
@@ -23,6 +22,10 @@ namespace ParacletusConsole
 
 		public string Font;
 		public float FontSize;
+
+		public bool LowerCaseMachineName;
+
+		public Nil.FormState FormState;
 
 		public Configuration()
 		{
@@ -40,6 +43,8 @@ namespace ParacletusConsole
 
 			Font = "Lucida Console";
 			FontSize = 8.0f;
+
+			LowerCaseMachineName = true;
 
 			FormState = new Nil.FormState();
 		}

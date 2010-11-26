@@ -55,9 +55,12 @@ namespace ParacletusConsole
 
 		void InitialiseVariableDictionary()
 		{
+			string machineName = Environment.MachineName;
+			if (ProgramConfiguration.LowerCaseMachineName)
+				machineName = machineName.ToLower();
 			VariableDictionary = new Dictionary<string, string>();
 			VariableDictionary.Add("User", Environment.UserName);
-			VariableDictionary.Add("MachineName", Environment.MachineName);
+			VariableDictionary.Add("MachineName", machineName);
 		}
 
 		void UpdateWorkingDirectory()
