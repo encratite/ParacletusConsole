@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Drawing;
 
 namespace ParacletusConsole
 {
@@ -13,7 +12,7 @@ namespace ParacletusConsole
 		public string Prompt;
 		public Nil.FormState FormState;
 
-		public Color
+		public SerialisableColour
 			CommandTextInputColour,
 			CommandTextOutputColour,
 			DefaultOutputColour,
@@ -23,13 +22,21 @@ namespace ParacletusConsole
 
 		public Configuration()
 		{
-			Prompt = "#57aaff[ #ffc05e$User$#ffd4b2@#ffc05e$MachineName$ #cacaca$CurrentWorkingDirectory$ #57aaff] ";
-			CommandTextInputColour = Color.White;
-			CommandTextOutputColour = Color.White;
-			DefaultOutputColour = Color.White;
-			ErrorColour = Color.Red;
-			BackgroundColour = Color.Black;
-			InputFieldBackgroundColour = Color.DarkGray;
+			SerialisableColour
+				white = new SerialisableColour(0xff, 0xff, 0xff),
+				red = new SerialisableColour(0xff, 0, 0),
+				black = new SerialisableColour(0, 0, 0),
+				darkGrey = new SerialisableColour(0x40, 0x40, 0x40);
+
+			Prompt = "#ff57aaff[ #ffffc05e$User$#ffffd4b2@#ffffc05e$MachineName$ #ffcacaca$CurrentWorkingDirectory$ #ff57aaff] ";
+
+			CommandTextInputColour = white;
+			CommandTextOutputColour = white;
+			DefaultOutputColour = white;
+			ErrorColour = red;
+			BackgroundColour = black;
+			InputFieldBackgroundColour = darkGrey;
+
 			FormState = new Nil.FormState();
 		}
 	}

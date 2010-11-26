@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="Paracletus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerialisableColour.cs" />
     <Compile Include="Settings.cs" />
     <EmbeddedResource Include="ParacletusForm.resx">
       <DependentUpon>ParacletusForm.cs</DependentUpon>

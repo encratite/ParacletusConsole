@@ -71,11 +71,11 @@ namespace ParacletusConsole
 			try
 			{
 				ProgramConfiguration = ConfigurationSerialiser.Load();
-				MainForm.InputBox.ForeColor = ProgramConfiguration.CommandTextInputColour;
-				MainForm.InputBox.BackColor = ProgramConfiguration.InputFieldBackgroundColour;
-				MainForm.ConsoleBox.ForeColor = ProgramConfiguration.DefaultOutputColour;
-				MainForm.BackColor = ProgramConfiguration.BackgroundColour;
-				MainForm.ConsoleBox.BackColor = ProgramConfiguration.BackgroundColour;
+				MainForm.InputBox.ForeColor = ProgramConfiguration.CommandTextInputColour.ToColour();
+				MainForm.InputBox.BackColor = ProgramConfiguration.InputFieldBackgroundColour.ToColour();
+				MainForm.ConsoleBox.ForeColor = ProgramConfiguration.DefaultOutputColour.ToColour();
+				MainForm.BackColor = ProgramConfiguration.BackgroundColour.ToColour();
+				MainForm.ConsoleBox.BackColor = ProgramConfiguration.BackgroundColour.ToColour();
 				GotConfiguration = true;
 			}
 			catch (FileNotFoundException)
@@ -133,15 +133,15 @@ namespace ParacletusConsole
 			Print(line + "\n");
 		}
 
-		const int HexColoursPerCode = 3;
+		const int HexColoursPerCode = 4;
 		const int HexColourSize = 2;
 		const int HexCodeTotalSize = HexColoursPerCode * HexColourSize;
 
 		void PrintError(string line)
 		{
-			SetOutputColour(ProgramConfiguration.ErrorColour);
+			SetOutputColour(ProgramConfiguration.ErrorColour.ToColour());
 			PrintLine(line);
-			SetOutputColour(ProgramConfiguration.DefaultOutputColour);
+			SetOutputColour(ProgramConfiguration.DefaultOutputColour.ToColour());
 		}
 
 		Color ConvertHexStringToColour(string input)
@@ -153,7 +153,7 @@ namespace ParacletusConsole
 				int value = Convert.ToInt32(currentCode, 16);
 				colours.Add(value);
 			}
-			Color output = Color.FromArgb(colours[0], colours[1], colours[2]);
+			Color output = Color.FromArgb(colours[0], colours[1], colours[2], colours[3]);
 			return output;
 		}
 
@@ -239,7 +239,14 @@ namespace ParacletusConsole
 
 		void ChangeDirectory(string[] arguments)
 		{
-			System.IO.Directory.SetCurrentDirectory(arguments[0]);
+			try
+			{
+				System.IO.Directory.SetCurrentDirectory(arguments[0]);
+			}
+			catch (DirectoryNotFoundException exception)
+			{
+				PrintError(exception.Message);
+			}
 		}
 
 		void PrintBuffer(byte[] buffer, int bytesRead)
@@ -301,15 +308,21 @@ namespace ParacletusConsole
 
 		void SetOutputColour(Color colour)
 		{
-			MainForm.ConsoleBox.SelectionColor = colour;
+			MainForm.InputBox.Invoke
+			(
+				(MethodInvoker)delegate
+				{
+					MainForm.ConsoleBox.SelectionColor = colour;
+				}
+			);
 		}
 
 		void ProcessRegularEnter()
 		{
 			string line = MainForm.InputBox.Text;
-			SetOutputColour(ProgramConfiguration.CommandTextOutputColour);
+			SetOutputColour(ProgramConfiguration.CommandTextOutputColour.ToColour());
 			PrintLine(line);
-			SetOutputColour(ProgramConfiguration.DefaultOutputColour);
+			SetOutputColour(ProgramConfiguration.DefaultOutputColour.ToColour());
 			line = line.Trim();
 			if (line.Length == 0)
 			{
