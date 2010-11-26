@@ -322,12 +322,24 @@ namespace ParacletusConsole
 			);
 		}
 
+		void PrintCommandString(string line)
+		{
+			int spaceOffset = line.IndexOf(' ');
+			if (spaceOffset == -1)
+				spaceOffset = line.Length;
+			string command = line.Substring(0, spaceOffset);
+			string argumentString = line.Substring(spaceOffset);
+			SetOutputColour(ProgramConfiguration.CommandTextOutputHighlightColour.ToColour());
+			Print(command);
+			SetOutputColour(ProgramConfiguration.CommandTextOutputColour.ToColour());
+			PrintLine(argumentString);
+			SetOutputColour(ProgramConfiguration.DefaultOutputColour.ToColour());
+		}
+
 		void ProcessRegularEnter()
 		{
 			string line = MainForm.InputBox.Text;
-			SetOutputColour(ProgramConfiguration.CommandTextOutputColour.ToColour());
-			PrintLine(line);
-			SetOutputColour(ProgramConfiguration.DefaultOutputColour.ToColour());
+			PrintCommandString(line);
 			line = line.Trim();
 			if (line.Length == 0)
 			{

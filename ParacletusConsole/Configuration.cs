@@ -15,6 +15,7 @@ namespace ParacletusConsole
 		public SerialisableColour
 			CommandTextInputColour,
 			CommandTextOutputColour,
+			CommandTextOutputHighlightColour,
 			DefaultOutputColour,
 			ErrorColour,
 			BackgroundColour,
@@ -25,20 +26,17 @@ namespace ParacletusConsole
 
 		public Configuration()
 		{
-			SerialisableColour
-				white = new SerialisableColour(0xff, 0xff, 0xff),
-				red = new SerialisableColour(0xff, 0, 0),
-				black = new SerialisableColour(0, 0, 0),
-				darkGrey = new SerialisableColour(0x40, 0x40, 0x40);
+			SerialisableColour white = new SerialisableColour(255, 255, 255);
 
 			Prompt = "#ff57aaff[ #ffffc05e$User$#ffffd4b2@#ffffc05e$MachineName$ #ffcacaca$CurrentWorkingDirectory$ #ff57aaff] ";
 
 			CommandTextInputColour = white;
-			CommandTextOutputColour = white;
+			CommandTextOutputColour = new SerialisableColour(213, 228, 191);
+			CommandTextOutputHighlightColour = new SerialisableColour(255, 116, 48);
 			DefaultOutputColour = white;
-			ErrorColour = red;
-			BackgroundColour = black;
-			InputFieldBackgroundColour = darkGrey;
+			ErrorColour = new SerialisableColour(255, 0, 0);
+			BackgroundColour = new SerialisableColour(0, 0, 0);
+			InputFieldBackgroundColour = new SerialisableColour(64, 64, 64);
 
 			Font = "Lucida Console";
 			FontSize = 8.0f;
