@@ -23,7 +23,7 @@ namespace ParacletusConsole
 
 		public Configuration()
 		{
-			Prompt = "#eaff00$User$#96ff00@#eaff00$MachineName$ #7debff$CurrentWorkingDirectory$#506dff> ";
+			Prompt = "#57aaff[ #ffc05e$User$#ffd4b2@#ffc05e$MachineName$ #cacaca$CurrentWorkingDirectory$ #57aaff] ";
 			CommandTextInputColour = Color.White;
 			CommandTextOutputColour = Color.White;
 			DefaultOutputColour = Color.White;

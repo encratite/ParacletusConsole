@@ -174,6 +174,8 @@ namespace ParacletusConsole
 					}
 					else
 					{
+						Print(currentOutput);
+						currentOutput = "";
 						string hexString = input.Substring(offset, HexCodeTotalSize);
 						i = offset + HexCodeTotalSize;
 						try
@@ -186,8 +188,6 @@ namespace ParacletusConsole
 							//error, the user has specified an invalid hex string, let's just print some garbage instead
 							currentOutput += ColourIdentifier + "InvalidColour";
 						}
-						Print(currentOutput);
-						currentOutput = "";
 						continue;
 					}
 				}
@@ -396,8 +396,7 @@ namespace ParacletusConsole
 			lock (this)
 			{
 				Terminating = true;
-				//deactivated to test default values
-				//SaveConfiguration();
+				SaveConfiguration();
 				KillProcess();
 			}
 		}
