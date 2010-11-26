@@ -76,6 +76,11 @@ namespace ParacletusConsole
 				MainForm.ConsoleBox.ForeColor = ProgramConfiguration.DefaultOutputColour.ToColour();
 				MainForm.BackColor = ProgramConfiguration.BackgroundColour.ToColour();
 				MainForm.ConsoleBox.BackColor = ProgramConfiguration.BackgroundColour.ToColour();
+
+				Font MainFont = new Font(ProgramConfiguration.Font, ProgramConfiguration.FontSize);
+				MainForm.InputBox.Font = MainFont;
+				MainForm.ConsoleBox.Font = MainFont;
+
 				GotConfiguration = true;
 			}
 			catch (FileNotFoundException)

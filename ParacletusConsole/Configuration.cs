@@ -20,6 +20,9 @@ namespace ParacletusConsole
 			BackgroundColour,
 			InputFieldBackgroundColour;
 
+		public string Font;
+		public float FontSize;
+
 		public Configuration()
 		{
 			SerialisableColour
@@ -36,6 +39,9 @@ namespace ParacletusConsole
 			ErrorColour = red;
 			BackgroundColour = black;
 			InputFieldBackgroundColour = darkGrey;
+
+			Font = "Lucida Console";
+			FontSize = 8.0f;
 
 			FormState = new Nil.FormState();
 		}
