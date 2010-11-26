@@ -342,6 +342,25 @@ namespace ParacletusConsole
 			SetOutputColour(ProgramConfiguration.DefaultOutputColour.ToColour());
 		}
 
+		bool PerformChangeDirectoryCheck(string path)
+		{
+			try
+			{
+				FileAttributes attributes = File.GetAttributes(path);
+				if ((attributes & FileAttributes.Directory) != 0)
+				{
+					//this is a directory, it cannot be executed, let's just cd instead
+					System.IO.Directory.SetCurrentDirectory(path);
+					PromptAndSelect();
+					return true;
+				}
+			}
+			catch (FileNotFoundException)
+			{
+			}
+			return false;
+		}
+
 		void ProcessRegularEnter()
 		{
 			string line = MainForm.InputBox.Text;
@@ -381,6 +400,10 @@ namespace ParacletusConsole
 			}
 			else
 			{
+				string path = arguments.Command;
+				if (PerformChangeDirectoryCheck(path))
+					return;
+
 				try
 				{
 					Writable = false;
@@ -393,7 +416,7 @@ namespace ParacletusConsole
 					info.RedirectStandardInput = true;
 					info.RedirectStandardOutput = true;
 					info.RedirectStandardError = true;
-					info.FileName = arguments.Command;
+					info.FileName = path;
 					info.Arguments = arguments.GetQuotedArguments();
 					info.WindowStyle = ProcessWindowStyle.Hidden;
 					info.CreateNoWindow = true;
