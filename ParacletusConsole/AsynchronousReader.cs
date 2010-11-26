@@ -6,23 +6,27 @@ using System.IO;
 
 namespace ParacletusConsole
 {
-	public class AsynchronousReadHandler
+	public class AsynchronousReader
 	{
 		public delegate void ReadHandler(byte[] buffer, int bytesRead);
+		public delegate void CloseHandler();
 
 		ConsoleHandler ConsoleHandler;
 		StreamReader Stream;
 		AsyncCallback Callback;
-		ReadHandler DelegateInstance;
+
+		ReadHandler ReadDelegate;
+		CloseHandler CloseDelegate;
 
 		const int ReadSize = 1024;
 		byte[] Buffer;
 
-		public AsynchronousReadHandler(ConsoleHandler consoleHandler, ReadHandler readHandler, StreamReader stream)
+		public AsynchronousReader(ConsoleHandler consoleHandler, ReadHandler readHandler, CloseHandler closeHandler, StreamReader stream)
 		{
-			this.ConsoleHandler = consoleHandler;
-			this.DelegateInstance = readHandler;
-			this.Stream = stream;
+			ConsoleHandler = consoleHandler;
+			ReadDelegate = readHandler;
+			CloseDelegate = CloseDelegate;
+			Stream = stream;
 
 			Buffer = new byte[ReadSize];
 			Callback = new AsyncCallback(ReadCallback);
@@ -42,7 +46,7 @@ namespace ParacletusConsole
 				int bytesRead = Stream.BaseStream.EndRead(result);
 				if (bytesRead == 0)
 					return;
-				DelegateInstance(Buffer, bytesRead);
+				ReadDelegate(Buffer, bytesRead);
 				Read();
 			}
 		}

@@ -18,14 +18,14 @@ namespace ParacletusConsole
 		public delegate void CommandHandlerFunction(string[] arguments);
 		Dictionary<string, CommandHandler> CommandHandlerDictionary;
 		bool Terminating;
-		bool Writable;
+		bool ProcessIOActive;
 
 		string CurrentWorkingDirectory;
 		Dictionary<string, string> VariableDictionary;
 
 		Process Process;
 
-		AsynchronousReadHandler
+		AsynchronousReader
 			StandardOutputReader,
 			StandardErrorReader;
 
@@ -42,7 +42,7 @@ namespace ParacletusConsole
 			this.MainForm = consoleForm;
 			Process = null;
 			Terminating = false;
-			Writable = false;
+			ProcessIOActive = false;
 
 			ConfigurationSerialiser = new Nil.Serialiser<Configuration>(Configuration.ConfigurationFile);
 
@@ -271,9 +271,17 @@ namespace ParacletusConsole
 			PrintBuffer(buffer, bytesRead);
 		}
 
+		public void HandleStandardOutputClose()
+		{
+		}
+
 		public void HandleStandardErrorRead(byte[] buffer, int bytesRead)
 		{
 			PrintBuffer(buffer, bytesRead);
+		}
+
+		public void HandleStandardErrorClose()
+		{
 		}
 
 		void PromptAndSelect()
@@ -311,7 +319,7 @@ namespace ParacletusConsole
 			lock (this)
 			{
 				Process = null;
-				Writable = false;
+				ProcessIOActive = false;
 				if (!Terminating)
 					PromptAndSelect();
 			}
@@ -365,7 +373,7 @@ namespace ParacletusConsole
 		{
 			try
 			{
-				Writable = false;
+				ProcessIOActive = false;
 
 				//check for executable programs matching that name
 				Process = new Process();
@@ -382,17 +390,17 @@ namespace ParacletusConsole
 
 				Process.Start();
 
-				StandardOutputReader = new AsynchronousReadHandler(this, HandleStandardOutputRead, Process.StandardOutput);
-				StandardErrorReader = new AsynchronousReadHandler(this, HandleStandardErrorRead, Process.StandardError);
+				StandardOutputReader = new AsynchronousReader(this, HandleStandardOutputRead, HandleStandardOutputClose, Process.StandardOutput);
+				StandardErrorReader = new AsynchronousReader(this, HandleStandardErrorRead, HandleStandardErrorClose, Process.StandardError);
 
 				new Thread(ProcessTerminationHandler).Start();
 
-				Writable = true;
+				ProcessIOActive = true;
 			}
 			catch (System.ComponentModel.Win32Exception exception)
 			{
 				Process = null;
-				Writable = false;
+				ProcessIOActive = false;
 				PrintError(exception.Message);
 				PromptAndSelect();
 			}
@@ -446,7 +454,7 @@ namespace ParacletusConsole
 
 		void ProcessRuntimeEnter()
 		{
-			if (Writable)
+			if (ProcessIOActive)
 			{
 				string line = MainForm.InputBox.Text;
 				PrintLine(line);
