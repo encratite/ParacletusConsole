@@ -31,7 +31,7 @@ namespace ParacletusConsole
 		{
 			SerialisableColour white = new SerialisableColour(255, 255, 255);
 
-			Prompt = "#ff57aaff[ #ffffc05e$User$#ffffd4b2@#ffffc05e$MachineName$ #ffcacaca$CurrentWorkingDirectory$ #ff57aaff] ";
+			Prompt = "#ff57aaff[ #ffffc05e$User$#ffffd4b2@#ffffc05e$MachineName$ #ff57aaff| #ffcacaca$CurrentWorkingDirectory$ #ff57aaff] ";
 
 			CommandTextInputColour = white;
 			CommandTextOutputColour = new SerialisableColour(213, 228, 191);
