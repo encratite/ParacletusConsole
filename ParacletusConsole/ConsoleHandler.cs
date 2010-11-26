@@ -71,6 +71,11 @@ namespace ParacletusConsole
 			try
 			{
 				ProgramConfiguration = ConfigurationSerialiser.Load();
+				MainForm.InputBox.ForeColor = ProgramConfiguration.CommandTextInputColour;
+				MainForm.InputBox.BackColor = ProgramConfiguration.InputFieldBackgroundColour;
+				MainForm.ConsoleBox.ForeColor = ProgramConfiguration.DefaultOutputColour;
+				MainForm.BackColor = ProgramConfiguration.BackgroundColour;
+				MainForm.ConsoleBox.BackColor = ProgramConfiguration.BackgroundColour;
 				GotConfiguration = true;
 			}
 			catch (FileNotFoundException)
@@ -134,7 +139,9 @@ namespace ParacletusConsole
 
 		void PrintError(string line)
 		{
+			SetOutputColour(ProgramConfiguration.ErrorColour);
 			PrintLine(line);
+			SetOutputColour(ProgramConfiguration.DefaultOutputColour);
 		}
 
 		Color ConvertHexStringToColour(string input)
@@ -172,7 +179,7 @@ namespace ParacletusConsole
 						try
 						{
 							Color colour = ConvertHexStringToColour(hexString);
-							MainForm.ConsoleBox.SelectionColor = colour;
+							SetOutputColour(colour);
 						}
 						catch (FormatException)
 						{
@@ -292,10 +299,17 @@ namespace ParacletusConsole
 			}
 		}
 
+		void SetOutputColour(Color colour)
+		{
+			MainForm.ConsoleBox.SelectionColor = colour;
+		}
+
 		void ProcessRegularEnter()
 		{
 			string line = MainForm.InputBox.Text;
+			SetOutputColour(ProgramConfiguration.CommandTextOutputColour);
 			PrintLine(line);
+			SetOutputColour(ProgramConfiguration.DefaultOutputColour);
 			line = line.Trim();
 			if (line.Length == 0)
 			{
@@ -322,7 +336,7 @@ namespace ParacletusConsole
 				CommandHandler handler = CommandHandlerDictionary[arguments.Command];
 				if (arguments.Arguments.Length != handler.ArgumentCount)
 				{
-					PrintLine("Invalid argument count.");
+					PrintError("Invalid argument count.");
 					PrintLine(handler.Usage());
 				}
 				else
@@ -361,7 +375,7 @@ namespace ParacletusConsole
 				{
 					Process = null;
 					Writable = false;
-					PrintLine(exception.Message);
+					PrintError(exception.Message);
 					PromptAndSelect();
 				}
 			}
@@ -371,7 +385,6 @@ namespace ParacletusConsole
 		{
 			if (Writable)
 			{
-				Console.WriteLine("ProcessRuntimeEnter()");
 				string line = MainForm.InputBox.Text;
 				PrintLine(line);
 				Process.StandardInput.WriteLine(line);
@@ -383,7 +396,8 @@ namespace ParacletusConsole
 			lock (this)
 			{
 				Terminating = true;
-				SaveConfiguration();
+				//deactivated to test default values
+				//SaveConfiguration();
 				KillProcess();
 			}
 		}
@@ -398,7 +412,7 @@ namespace ParacletusConsole
 		{
 			lock (this)
 			{
-				PrintLine("Process has been terminated");
+				PrintError("Process has been terminated");
 				KillProcess();
 			}
 		}
