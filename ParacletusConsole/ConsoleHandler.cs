@@ -39,7 +39,6 @@ namespace ParacletusConsole
 		public void FormLoaded()
 		{
 			PrintPrompt();
-
 		}
 
 		void AddCommand(string command, string argumentDescription, string description, CommandHandlerFunction function, int argumentCount)

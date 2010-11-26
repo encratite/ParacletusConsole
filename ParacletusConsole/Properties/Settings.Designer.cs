@@ -22,17 +22,5 @@ namespace ParacletusConsole.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("640, 480")]
-        public global::System.Drawing.Size WindowSize {
-            get {
-                return ((global::System.Drawing.Size)(this["WindowSize"]));
-            }
-            set {
-                this["WindowSize"] = value;
-            }
-        }
     }
 }
