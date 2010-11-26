@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -24,6 +25,10 @@ namespace ParacletusConsole
 			StandardOutputReader,
 			StandardErrorReader;
 
+		Nil.Serialiser<Configuration> ConfigurationSerialiser;
+		Configuration ProgramConfiguration;
+		bool GotConfiguration;
+
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
 			consoleForm.consoleHandler = this;
@@ -32,12 +37,38 @@ namespace ParacletusConsole
 			Terminating = false;
 			Writable = false;
 
+			ConfigurationSerialiser = new Nil.Serialiser<Configuration>(Configuration.ConfigurationFile);
+
+			LoadConfiguration();
+
 			CommandHandlerDictionary = new Dictionary<string, CommandHandler>();
 			AddCommand("cd", "<directory>", "change the working directory", this.ChangeDirectory, 1);
 		}
 
+		void LoadConfiguration()
+		{
+			try
+			{
+				ProgramConfiguration = ConfigurationSerialiser.Load();
+				GotConfiguration = true;
+			}
+			catch (FileNotFoundException)
+			{
+				ProgramConfiguration = new Configuration();
+				GotConfiguration = false;
+			}
+		}
+
+		void SaveConfiguration()
+		{
+			ProgramConfiguration.FormState.Load(MainForm);
+			ConfigurationSerialiser.Store(ProgramConfiguration);
+		}
+
 		public void FormLoaded()
 		{
+			if (GotConfiguration)
+				ProgramConfiguration.FormState.Apply(MainForm);
 			PrintPrompt();
 		}
 
@@ -124,7 +155,6 @@ namespace ParacletusConsole
 
 		public void Enter()
 		{
-			Console.WriteLine("Enter()");
 			lock (this)
 			{
 				if (Process == null)
@@ -154,7 +184,6 @@ namespace ParacletusConsole
 
 		void ProcessRegularEnter()
 		{
-			Console.WriteLine("ProcessRegularEnter()");
 			string line = MainForm.inputBox.Text;
 			PrintLine(line);
 			line = line.Trim();
@@ -244,6 +273,7 @@ namespace ParacletusConsole
 			lock (this)
 			{
 				Terminating = true;
+				SaveConfiguration();
 				KillProcess();
 			}
 		}
