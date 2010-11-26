@@ -271,17 +271,9 @@ namespace ParacletusConsole
 			PrintBuffer(buffer, bytesRead);
 		}
 
-		public void HandleStandardOutputClose()
-		{
-		}
-
 		public void HandleStandardErrorRead(byte[] buffer, int bytesRead)
 		{
 			PrintBuffer(buffer, bytesRead);
-		}
-
-		public void HandleStandardErrorClose()
-		{
 		}
 
 		void PromptAndSelect()
@@ -395,8 +387,8 @@ namespace ParacletusConsole
 
 				Process.Start();
 
-				StandardOutputReader = new AsynchronousReader(this, HandleStandardOutputRead, HandleStandardOutputClose, Process.StandardOutput);
-				StandardErrorReader = new AsynchronousReader(this, HandleStandardErrorRead, HandleStandardErrorClose, Process.StandardError);
+				StandardOutputReader = new AsynchronousReader(this, HandleStandardOutputRead, Process.StandardOutput);
+				StandardErrorReader = new AsynchronousReader(this, HandleStandardErrorRead, Process.StandardError);
 
 				new Thread(ProcessTermination).Start();
 

@@ -10,7 +10,6 @@ namespace ParacletusConsole
 	public class AsynchronousReader
 	{
 		public delegate void ReadHandler(byte[] buffer, int bytesRead);
-		public delegate void CloseHandler();
 
 		public AutoResetEvent CloseEvent;
 
@@ -19,16 +18,14 @@ namespace ParacletusConsole
 		AsyncCallback Callback;
 
 		ReadHandler ReadDelegate;
-		CloseHandler CloseDelegate;
 
 		const int ReadSize = 1024;
 		byte[] Buffer;
 
-		public AsynchronousReader(ConsoleHandler consoleHandler, ReadHandler readHandler, CloseHandler closeHandler, StreamReader stream)
+		public AsynchronousReader(ConsoleHandler consoleHandler, ReadHandler readHandler, StreamReader stream)
 		{
 			ConsoleHandler = consoleHandler;
 			ReadDelegate = readHandler;
-			CloseDelegate = closeHandler;
 			Stream = stream;
 
 			Buffer = new byte[ReadSize];
