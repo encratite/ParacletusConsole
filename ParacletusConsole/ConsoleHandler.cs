@@ -361,6 +361,43 @@ namespace ParacletusConsole
 			return false;
 		}
 
+		void AttemptProcessExecution(CommandArguments arguments)
+		{
+			try
+			{
+				Writable = false;
+
+				//check for executable programs matching that name
+				Process = new Process();
+
+				ProcessStartInfo info = Process.StartInfo;
+				info.UseShellExecute = false;
+				info.RedirectStandardInput = true;
+				info.RedirectStandardOutput = true;
+				info.RedirectStandardError = true;
+				info.FileName = arguments.Command;
+				info.Arguments = arguments.GetQuotedArguments();
+				info.WindowStyle = ProcessWindowStyle.Hidden;
+				info.CreateNoWindow = true;
+
+				Process.Start();
+
+				StandardOutputReader = new AsynchronousReadHandler(this, HandleStandardOutputRead, Process.StandardOutput);
+				StandardErrorReader = new AsynchronousReadHandler(this, HandleStandardErrorRead, Process.StandardError);
+
+				new Thread(ProcessTerminationHandler).Start();
+
+				Writable = true;
+			}
+			catch (System.ComponentModel.Win32Exception exception)
+			{
+				Process = null;
+				Writable = false;
+				PrintError(exception.Message);
+				PromptAndSelect();
+			}
+		}
+
 		void ProcessRegularEnter()
 		{
 			string line = MainForm.InputBox.Text;
@@ -400,43 +437,10 @@ namespace ParacletusConsole
 			}
 			else
 			{
-				string path = arguments.Command;
-				if (PerformChangeDirectoryCheck(path))
+				if (PerformChangeDirectoryCheck(arguments.Command))
 					return;
 
-				try
-				{
-					Writable = false;
-
-					//check for executable programs matching that name
-					Process = new Process();
-
-					ProcessStartInfo info = Process.StartInfo;
-					info.UseShellExecute = false;
-					info.RedirectStandardInput = true;
-					info.RedirectStandardOutput = true;
-					info.RedirectStandardError = true;
-					info.FileName = path;
-					info.Arguments = arguments.GetQuotedArguments();
-					info.WindowStyle = ProcessWindowStyle.Hidden;
-					info.CreateNoWindow = true;
-
-					Process.Start();
-
-					StandardOutputReader = new AsynchronousReadHandler(this, HandleStandardOutputRead, Process.StandardOutput);
-					StandardErrorReader = new AsynchronousReadHandler(this, HandleStandardErrorRead, Process.StandardError);
-
-					new Thread(ProcessTerminationHandler).Start();
-
-					Writable = true;
-				}
-				catch (System.ComponentModel.Win32Exception exception)
-				{
-					Process = null;
-					Writable = false;
-					PrintError(exception.Message);
-					PromptAndSelect();
-				}
+				AttemptProcessExecution(arguments);
 			}
 		}
 
