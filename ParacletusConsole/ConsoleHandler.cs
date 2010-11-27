@@ -436,7 +436,7 @@ namespace ParacletusConsole
 			}
 			catch (ArgumentException exception)
 			{
-				PrintLine(exception.Message);
+				PrintError(exception.Message);
 				PromptAndSelect();
 				return;
 			}

@@ -13,7 +13,7 @@ namespace ParacletusConsole
 		public CommandArguments(string line)
 		{
 			List<string> tokens = new List<string>();
-			string currenToken = "";
+			string currentToken = "";
 			bool quoteMode = false;
 			char lastChar = '\x00';
 			for(int i = 0; i < line.Length; i++)
@@ -21,22 +21,29 @@ namespace ParacletusConsole
 				char input = line[i];
 				bool wasQuote = i > 0 && lastChar == '"';
 				bool quoteError = !quoteMode && wasQuote;
+
 				switch (input)
 				{
 					case ' ':
 						if(quoteMode)
-							currenToken += input;
+							currentToken += input;
 						else
 						{
-							if(currenToken.Length > 0)
+							if(currentToken.Length > 0)
 							{
-								tokens.Add(currenToken);
-								currenToken = "";
+								tokens.Add(currentToken);
+								currentToken = "";
 							}
 						}
 						break;
 
 					case '"':
+						if (lastChar == '\\')
+						{
+							currentToken.Remove(currentToken.Length - 1);
+							currentToken += input;
+							break;
+						}
 						if (quoteError)
 							throw new ArgumentException("Encountered a quote right after a terminating quote");
 						quoteMode = !quoteMode;
@@ -45,7 +52,7 @@ namespace ParacletusConsole
 					default:
 						if (quoteError)
 							throw new ArgumentException("Encountered a printable character after a terminating quote");
-						currenToken += input;
+						currentToken += input;
 						break;
 				}
 				lastChar = input;
@@ -54,8 +61,8 @@ namespace ParacletusConsole
 			if (quoteMode)
 				throw new ArgumentException("Missing quote");
 
-			if (currenToken.Length > 0)
-				tokens.Add(currenToken);
+			if (currentToken.Length > 0)
+				tokens.Add(currentToken);
 
 			Command = tokens[0];
 			Arguments = tokens.GetRange(1, tokens.Count - 1).ToArray();
