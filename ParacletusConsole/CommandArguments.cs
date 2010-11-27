@@ -84,15 +84,11 @@ namespace ParacletusConsole
 			bool first = true;
 			foreach (ArgumentResult argumentResult in Arguments)
 			{
-				string argument = argumentResult.Argument;
 				if (first)
 					first = false;
 				else
 					output += " ";
-				if (argument.IndexOf(' ') == -1)
-					output += argument;
-				else
-					output += "\"" + argument + "\"";
+				output += argumentResult.EscapeArgument();
 			}
 			return output;
 		}
@@ -103,6 +99,18 @@ namespace ParacletusConsole
 			foreach (ArgumentResult result in Arguments)
 				output.Add(result.Argument);
 			return output.ToArray();
+		}
+
+		public ArgumentResult FindMatchingResult(int offset)
+		{
+			if (Command.Match(offset))
+				return Command;
+			foreach (ArgumentResult result in Arguments)
+			{
+				if (result.Match(offset))
+					return result;
+			}
+			throw new ArgumentException("The offset does not match any of the arguments");
 		}
 	}
 }

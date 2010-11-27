@@ -1,0 +1,43 @@
+C:\ contains:
+
+<directory> test
+
+C:\test contains:
+
+<directory> dir
+<file>      file1
+<file>      file2
+
+C:\applications contains:
+
+<file>      some
+
+The PATH environment variable contains:
+
+C:\applications
+
+Now let's presume the CWD is C:\. Cases to consider:
+
+When the user is working on the first argument then PATH/commands are considered first, then the immediate file system:
+	"|" -> "|" *popup shows [some]*
+
+Play a beep sound when no match is found
+	"d|" -> "d|" *beep*
+	"s|" -> "some |"
+
+After the command argument is done it will use directories/files only:
+	"blah |" -> "blah test"
+	"blah test|" -> "blah test\" *popup shows [dir, file1, file2]*
+
+When there are multiple choices it will make the match as long as possible and then display all matching files/directories:
+	"blah test\f|" -> "blah test\file" *popup shows [file1, file2]*
+
+The algorithm should deal with alphabetic sorting and string matching in a case-insensitive manner, as is the Windows way.
+Initialise the list of tabbable stuff L to [].
+The order is actually irrelevant since the entire list will be searched for each match anyways.
+So at first we determine whether we are operating on a command or on an argument.
+If it's a command:
+	Add all the *.exe matches from the PATH directories to L.
+If the existing argument we are tabbing from is a directory:
+	Make sure that the last character of the current argument becames a path separator symbol, i.e. \ on Windows.
+	Add the contents of the directory it is referring to to L.

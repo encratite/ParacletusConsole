@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
+using System.Media;
 
 namespace ParacletusConsole
 {
@@ -500,6 +501,35 @@ namespace ParacletusConsole
 		void Tab()
 		{
 			int offset = MainForm.InputBox.SelectionStart;
+			string line = MainForm.InputBox.Text;
+			CommandArguments arguments;
+			try
+			{
+				arguments = new CommandArguments(line);
+			}
+			catch (ArgumentException)
+			{
+				//there was a missing quote - this could possibly be handed by automatically attaching another quote at the end
+				Beep();
+				return;
+			}
+			ArgumentResult activeArgument;
+			try
+			{
+				activeArgument = arguments.FindMatchingResult(offset);
+			}
+			catch (ArgumentException)
+			{
+				//the cursor of the user was not within the boundaries of any argument within the line
+				Beep();
+				return;
+			}
+
+		}
+
+		void Beep()
+		{
+			SystemSounds.Beep.Play();
 		}
 
 		public void KeyPressed(KeyPressEventArgs keyEvent)
