@@ -7,15 +7,17 @@ namespace ParacletusConsole
 {
 	class CommandArguments
 	{
-		public string Command;
-		public string[] Arguments;
+		public ArgumentResult Command;
+		public ArgumentResult[] Arguments;
 
 		public CommandArguments(string line)
 		{
-			List<string> tokens = new List<string>();
+			List<ArgumentResult> tokens = new List<ArgumentResult>();
 			string currentToken = "";
+			int currentTokenOffset = 0;
 			bool quoteMode = false;
 			char lastChar = '\x00';
+
 			for(int i = 0; i < line.Length; i++)
 			{
 				char input = line[i];
@@ -31,7 +33,8 @@ namespace ParacletusConsole
 						{
 							if(currentToken.Length > 0)
 							{
-								tokens.Add(currentToken);
+								ArgumentResult newResult = new ArgumentResult(currentToken, currentTokenOffset);
+								tokens.Add(newResult);
 								currentToken = "";
 							}
 						}
@@ -47,11 +50,15 @@ namespace ParacletusConsole
 						if (quoteError)
 							throw new ArgumentException("Encountered a quote right after a terminating quote");
 						quoteMode = !quoteMode;
+						if(quoteMode)
+							currentTokenOffset = i;
 						break;
 
 					default:
 						if (quoteError)
 							throw new ArgumentException("Encountered a printable character after a terminating quote");
+						if(currentToken.Length == 0)
+							currentTokenOffset = i;
 						currentToken += input;
 						break;
 				}
@@ -62,7 +69,10 @@ namespace ParacletusConsole
 				throw new ArgumentException("Missing quote");
 
 			if (currentToken.Length > 0)
-				tokens.Add(currentToken);
+			{
+				ArgumentResult lastResult = new ArgumentResult(currentToken, currentTokenOffset);
+				tokens.Add(lastResult);
+			}
 
 			Command = tokens[0];
 			Arguments = tokens.GetRange(1, tokens.Count - 1).ToArray();
@@ -72,8 +82,9 @@ namespace ParacletusConsole
 		{
 			string output = "";
 			bool first = true;
-			foreach (string argument in Arguments)
+			foreach (ArgumentResult argumentResult in Arguments)
 			{
+				string argument = argumentResult.Argument;
 				if (first)
 					first = false;
 				else
@@ -84,6 +95,14 @@ namespace ParacletusConsole
 					output += "\"" + argument + "\"";
 			}
 			return output;
+		}
+
+		public string[] GetArgumentString()
+		{
+			List<string> output = new List<string>();
+			foreach (ArgumentResult result in Arguments)
+				output.Add(result.Argument);
+			return output.ToArray();
 		}
 	}
 }

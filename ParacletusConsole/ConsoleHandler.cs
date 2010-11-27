@@ -255,7 +255,7 @@ namespace ParacletusConsole
 			string output = "Arguments:";
 			for (int i = 0; i < arguments.Arguments.Length; i++)
 			{
-				string argument = arguments.Arguments[i];
+				string argument = arguments.Arguments[i].Argument;
 				output += " " + (i + 1).ToString() + ". \"" + argument + "\"";
 			}
 			PrintLine(output);
@@ -393,7 +393,7 @@ namespace ParacletusConsole
 				info.RedirectStandardInput = true;
 				info.RedirectStandardOutput = true;
 				info.RedirectStandardError = true;
-				info.FileName = arguments.Command;
+				info.FileName = arguments.Command.Argument;
 				info.Arguments = arguments.GetQuotedArguments();
 				info.WindowStyle = ProcessWindowStyle.Hidden;
 				info.CreateNoWindow = true;
@@ -441,21 +441,21 @@ namespace ParacletusConsole
 				return;
 			}
 
-			if (CommandHandlerDictionary.ContainsKey(arguments.Command))
+			if (CommandHandlerDictionary.ContainsKey(arguments.Command.Argument))
 			{
-				CommandHandler handler = CommandHandlerDictionary[arguments.Command];
+				CommandHandler handler = CommandHandlerDictionary[arguments.Command.Argument];
 				if (arguments.Arguments.Length != handler.ArgumentCount)
 				{
 					PrintError("Invalid argument count.");
 					PrintLine(handler.Usage());
 				}
 				else
-					handler.Function(arguments.Arguments);
+					handler.Function(arguments.GetArgumentString());
 				PromptAndSelect();
 			}
 			else
 			{
-				if (PerformChangeDirectoryCheck(arguments.Command))
+				if (PerformChangeDirectoryCheck(arguments.Command.Argument))
 					return;
 
 				AttemptProcessExecution(arguments);
@@ -499,6 +499,7 @@ namespace ParacletusConsole
 
 		void Tab()
 		{
+			int offset = MainForm.InputBox.SelectionStart;
 		}
 
 		public void KeyPressed(KeyPressEventArgs keyEvent)
