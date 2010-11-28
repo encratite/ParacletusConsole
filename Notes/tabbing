@@ -39,5 +39,10 @@ So at first we determine whether we are operating on a command or on an argument
 If it's a command:
 	Add all the *.exe matches from the PATH directories to L.
 If the existing argument we are tabbing from is a directory:
-	Make sure that the last character of the current argument becames a path separator symbol, i.e. \ on Windows.
+	Make sure that the last character of the current argument becomes a path separator symbol, i.e. \ on Windows.
 	Add the contents of the directory it is referring to to L.
+If the existing argument we are tabbing from is a file:
+	Err, well, in this case the user already has a perfect match and we can just abort at this point I think, possibly play a beep.
+	Wait, actually we should check the targeted directory for other files then and still display a popup for it, nevermind
+
+Now we filter out the strings which already mismatch the partial string the user has specified and expand the string as far as possible by calculating the longest common substring.
