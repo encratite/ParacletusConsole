@@ -42,6 +42,8 @@ namespace ParacletusConsole
 
 		List<string> PathNames;
 
+		bool IsWindows;
+
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
 			consoleForm.ConsoleHandler = this;
@@ -56,6 +58,7 @@ namespace ParacletusConsole
 			InitialiseVariableDictionary();
 			InitialiseKeyPressHandlerDictionary();
 
+			IsWindows = IsWindowsOS();
 			PathNames = LoadPathNames();
 
 			CommandHandlerDictionary = new Dictionary<string, CommandHandler>();
@@ -527,11 +530,42 @@ namespace ParacletusConsole
 			return output;
 		}
 
-		bool IsWindows()
+		bool IsWindowsOS()
 		{
 			string osString = System.Environment.OSVersion.ToString();
 			//Console.WriteLine("OS: " + osString);
 			return osString.IndexOf("Windows") != -1;
+		}
+
+		void LoadPathDirectory(List<string> pathStrings, string path)
+		{
+			//Console.WriteLine("Loading PATH: " + path);
+			try
+			{
+				DirectoryInfo directory = new DirectoryInfo(path);
+				//on Windows one could use PATHEXT extensions instead of just the exe extension at this point but I didn't really feel it was worth it
+				//regular batch files don't work with this program anyways
+				string extension;
+				if (IsWindows)
+					extension = ".exe";
+				else
+					extension = "";
+				FileInfo[] executables = directory.GetFiles("*" + extension);
+				foreach (FileInfo executable in executables)
+				{
+					//add the name without the extension
+					string name = executable.Name;
+					//Console.WriteLine("Discovered a binary: " + name);
+					//string processedName = name.Substring(0, name.Length - extension.Length);
+					//let's just add the full names for now, for great justice!
+					string processedName = name.Substring(0, name.Length);
+					pathStrings.Add(processedName);
+				}
+			}
+			catch (Exception)
+			{
+				//just ignore invalid PATHs for now although we could do the user a favour and inform them about invalid stuff in their PATH
+			}
 		}
 
 		List<string> LoadPathNames()
@@ -547,34 +581,28 @@ namespace ParacletusConsole
 				separator = ':';
 			string[] tokens = pathString.Split(separator);
 			foreach (string path in tokens)
+				LoadPathDirectory(pathStrings, path);
+			if (IsWindows)
 			{
-				//Console.WriteLine("Loading PATH: " + path);
-				try
-				{
-					DirectoryInfo directory = new DirectoryInfo(path);
-					//on Windows one could use PATHEXT extensions instead of just the exe extension at this point but I didn't really feel it was worth it
-					//regular batch files don't work with this program anyways
-					string extension;
-					if(IsWindows())
-						extension = ".exe";
-					else
-						extension = "";
-					FileInfo[] executables = directory.GetFiles("*" + extension);
-					foreach (FileInfo executable in executables)
-					{
-						//add the name without the extension
-						string name = executable.Name;
-						//Console.WriteLine("Discovered a binary: " + name);
-						string processedName = name.Substring(0, name.Length - extension.Length);
-						pathStrings.Add(processedName);
-					}
-				}
-				catch (Exception)
-				{
-					//just ignore invalid PATHs for now although we could do the user a favour and inform them about invalid stuff in their PATH
-				}
+				//Windows actually appears to have more paths it checks than just the ones in PATH
+				//the root and system32/SysWoW64 are not part of it for some reason
+				string root = Environment.GetEnvironmentVariable("SystemRoot");
+				string systemPath = Path.Combine(root, "system32");
+				string[] exceptions = { root, systemPath };
+				foreach (string path in exceptions)
+					LoadPathDirectory(pathStrings, path);
 			}
 			return pathStrings;
+		}
+
+		bool CaseInsensitiveCharacterComparison(char left, char right)
+		{
+			return Char.ToLower(left) == Char.ToLower(right);
+		}
+
+		bool CaseInsensitiveStringComparison(string left, string right)
+		{
+			return left.ToLower() == right.ToLower();
 		}
 
 		List<string> LoadDirectoryContentsForAPathToAFile(string path)
@@ -651,7 +679,11 @@ namespace ParacletusConsole
 			List<string> filteredTabStrings = new List<string>();
 			foreach (string target in tabbableStrings)
 			{
-				if (target.Length >= argumentString.Length && argumentString == target.Substring(0, argumentString.Length))
+				if
+				(
+					target.Length >= argumentString.Length &&
+					CaseInsensitiveStringComparison(argumentString, target.Substring(0, argumentString.Length))
+				)
 					filteredTabStrings.Add(target);
 			}
 
@@ -683,7 +715,7 @@ namespace ParacletusConsole
 			string newLine = left + replacement + right;
 
 			//need to fix the cursor position, it should be at the end of the current argument
-			MainForm.ConsoleBox.Text = newLine;
+			MainForm.InputBox.Text = newLine;
 		}
 
 		bool PerformCommonSubstringCheck(List<string> input, string sourceString, int offset)
@@ -696,7 +728,7 @@ namespace ParacletusConsole
 					Console.WriteLine("Offset " + offset + " exceeds the length of the string " + currentString);
 					return false;
 				}
-				if (sourceString[offset] != currentString[offset])
+				if (!CaseInsensitiveCharacterComparison(sourceString[offset], currentString[offset]))
 				{
 					Console.WriteLine("String mismatch: " + sourceString + " vs. " + currentString);
 					return false;
