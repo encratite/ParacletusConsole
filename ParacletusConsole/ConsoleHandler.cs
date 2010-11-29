@@ -549,7 +549,7 @@ namespace ParacletusConsole
 						pathStrings.Add(processedName);
 					}
 				}
-				catch (DirectoryNotFoundException)
+				catch (Exception)
 				{
 					//just ignore invalid PATHs for now although we could do the user a favour and inform them about invalid stuff in their PATH
 				}
@@ -645,6 +645,7 @@ namespace ParacletusConsole
 			}
 
 			//extend the argument accordingly
+			Console.WriteLine(longestCommonSubstring);
 		}
 
 		bool PerformCommonSubstringCheck(List<string> input, string sourceString, int offset)

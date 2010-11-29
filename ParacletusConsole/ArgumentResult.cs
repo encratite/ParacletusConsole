@@ -21,7 +21,7 @@ namespace ParacletusConsole
 
 		public bool Match(int offset)
 		{
-			return offset >= Offset && offset < Offset + Argument.Length;
+			return offset >= Offset && offset <= Offset + Argument.Length;
 		}
 
 		public string EscapeArgument()
