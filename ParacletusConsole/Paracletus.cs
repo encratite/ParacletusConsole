@@ -14,7 +14,7 @@ namespace ParacletusConsole
 			Application.SetCompatibleTextRenderingDefault(false);
 
 			ConsoleForm consoleForm = new ConsoleForm();
-			ConsoleHandler handler = new ConsoleHandler(consoleForm);
+			new ConsoleHandler(consoleForm);
 
 			Application.Run(consoleForm);
 		}
