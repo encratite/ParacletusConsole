@@ -539,9 +539,15 @@ namespace ParacletusConsole
 					DirectoryInfo directory = new DirectoryInfo(path);
 					//we could use PATHEXT extensions instead of just the exe extension at this point but I didn't really feel it was worth it
 					//regular batch files don't work with this program anyways
-					FileInfo[] executables = directory.GetFiles("*.exe");
+					const string extension = ".exe";
+					FileInfo[] executables = directory.GetFiles("*" + extension);
 					foreach (FileInfo executable in executables)
-						pathStrings.Add(executable.Name);
+					{
+						//add the name without the extension
+						string name = executable.Name;
+						string processedName = name.Substring(0, name.Length - extension.Length);
+						pathStrings.Add(processedName);
+					}
 				}
 				catch (DirectoryNotFoundException)
 				{
@@ -549,6 +555,17 @@ namespace ParacletusConsole
 				}
 			}
 			return pathStrings;
+		}
+
+		List<string> LoadDirectoryContentsForAPathToAFile(string path)
+		{
+			int offset = path.LastIndexOf(Path.DirectorySeparatorChar);
+			string directoryPath;
+			if (offset == -1)
+				directoryPath = ".";
+			else
+				directoryPath = path.Substring(0, offset);
+			return LoadDirectoryContent(directoryPath);
 		}
 
 		void Tab()
@@ -587,16 +604,75 @@ namespace ParacletusConsole
 			{
 				//the user is performing the tab within the boundaries of one of the argument units and not the command unit
 			}
-			if (IsDirectory(activeArgument.Argument))
+
+			string argumentString = activeArgument.Argument;
+
+			if (IsDirectory(argumentString))
 			{
 				//the current argument the user is tabbing in refers to a directory
-				List<string> directoryContent = LoadDirectoryContent(activeArgument.Argument);
+				List<string> directoryContent = LoadDirectoryContent(argumentString);
 				tabbableStrings.Concat(directoryContent);
 			}
 			else
 			{
 				//the tabbed argument either refers to a file or is simply incomplete and refers to neither a file nor a directory
+				//just add the directory it currently refers to then
+				List<string> directoryContent = LoadDirectoryContentsForAPathToAFile(argumentString);
+				tabbableStrings.Concat(directoryContent);
 			}
+
+			//filter out the strings which do not match the tabbed argument
+			List<string> filteredTabStrings = new List<string>();
+			foreach (string target in tabbableStrings)
+			{
+				if (argumentString == target.Substring(0, argumentString.Length))
+					filteredTabStrings.Add(target);
+			}
+
+			if (filteredTabStrings.Count == 0)
+			{
+				//no matches could be found
+				Beep();
+				return;
+			}
+
+			string longestCommonSubstring = GetLongestCommonSubstring(filteredTabStrings, argumentString.Length);
+			if (longestCommonSubstring == argumentString)
+			{
+				//no long match could be found, play a beep
+				Beep();
+				return;
+			}
+
+			//extend the argument accordingly
+		}
+
+		bool PerformCommonSubstringCheck(List<string> input, string sourceString, int offset)
+		{
+			for (int i = 1; i < input.Count; i++)
+			{
+				string currentString = input[i];
+				if (offset >= currentString.Length)
+					return false;
+				if (sourceString[offset] != currentString[offset])
+					return false;
+			}
+			return true;
+		}
+
+		string GetLongestCommonSubstring(List<string> input, int initialOffset)
+		{
+			int offset = initialOffset;
+			string sourceString = input.First();
+			while (true)
+			{
+				if (offset >= sourceString.Length)
+					break;
+				if (!PerformCommonSubstringCheck(input, sourceString, offset))
+					break;
+				offset++;
+			}
+			return sourceString.Substring(0, offset);
 		}
 
 		void Beep()
