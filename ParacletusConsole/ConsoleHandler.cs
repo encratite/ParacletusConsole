@@ -511,20 +511,28 @@ namespace ParacletusConsole
 			}
 		}
 
-		List<string> LoadDirectoryContent(string path)
+		string ProcessDirectoryContentString(string input, bool removePrefix)
+		{
+			if (removePrefix)
+				//get rid of the leading "." + path separator
+				return input.Substring(2);
+			return input;
+		}
+
+		List<string> LoadDirectoryContent(string path, bool removePrefix = false)
 		{
 			List<string> output = new List<string>();
 			DirectoryInfo selectedDirectory = new DirectoryInfo(path);
 			DirectoryInfo[] directories = selectedDirectory.GetDirectories();
 			foreach (DirectoryInfo currentDirectory in directories)
 			{
-				string directoryPath = Path.Combine(path, currentDirectory.Name);
+				string directoryPath = ProcessDirectoryContentString(Path.Combine(path, currentDirectory.Name), removePrefix);
 				output.Add(directoryPath);
 			}
 			FileInfo[] files = selectedDirectory.GetFiles();
 			foreach (FileInfo currentFile in files)
 			{
-				string filePath = Path.Combine(path, currentFile.Name);
+				string filePath = ProcessDirectoryContentString(Path.Combine(path, currentFile.Name), removePrefix);
 				output.Add(filePath);
 			}
 			return output;
@@ -609,11 +617,18 @@ namespace ParacletusConsole
 		{
 			int offset = path.LastIndexOf(Path.DirectorySeparatorChar);
 			string directoryPath;
+			bool removePrefix;
 			if (offset == -1)
+			{
 				directoryPath = ".";
+				removePrefix = true;
+			}
 			else
+			{
 				directoryPath = path.Substring(0, offset);
-			return LoadDirectoryContent(directoryPath);
+				removePrefix = false;
+			}
+			return LoadDirectoryContent(directoryPath, removePrefix);
 		}
 
 		void Tab()
@@ -644,22 +659,23 @@ namespace ParacletusConsole
 				Beep();
 				return;
 			}
+			string argumentString = activeArgument.Argument;
 			List<string> tabbableStrings = new List<string>();
 			if (System.Object.ReferenceEquals(activeArgument, arguments.Command))
 			{
 				//the user is performing the tab within the first unit of the input - that is the command unit
-				tabbableStrings.AddRange(PathNames);
 				Console.WriteLine("Command tab detected");
+				tabbableStrings.AddRange(PathNames);
 			}
 			else
 			{
 				//the user is performing the tab within the boundaries of one of the argument units and not the command unit
 				Console.WriteLine("Argument tab detected");
+				List<string> currentDirectory = LoadDirectoryContentsForAPathToAFile(argumentString);
+				tabbableStrings.AddRange(currentDirectory);
 			}
 
 			Console.WriteLine("Number of tabbable strings: " + tabbableStrings.Count);
-
-			string argumentString = activeArgument.Argument;
 
 			if (IsDirectory(argumentString))
 			{
