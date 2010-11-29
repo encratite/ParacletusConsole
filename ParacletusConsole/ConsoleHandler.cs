@@ -527,24 +527,44 @@ namespace ParacletusConsole
 			return output;
 		}
 
+		bool IsWindows()
+		{
+			string osString = System.Environment.OSVersion.ToString();
+			//Console.WriteLine("OS: " + osString);
+			return osString.IndexOf("Windows") != -1;
+		}
+
 		List<string> LoadPathNames()
 		{
 			List<string> pathStrings = new List<string>();
 			string pathString = Environment.GetEnvironmentVariable("PATH");
-			string[] tokens = pathString.Split(';');
+			char separator;
+			const char windowsPathSeparator = ';';
+			if(pathString.IndexOf(windowsPathSeparator) != -1)
+				separator = windowsPathSeparator;
+			else
+				//for UNIX likes
+				separator = ':';
+			string[] tokens = pathString.Split(separator);
 			foreach (string path in tokens)
 			{
+				//Console.WriteLine("Loading PATH: " + path);
 				try
 				{
 					DirectoryInfo directory = new DirectoryInfo(path);
-					//we could use PATHEXT extensions instead of just the exe extension at this point but I didn't really feel it was worth it
+					//on Windows one could use PATHEXT extensions instead of just the exe extension at this point but I didn't really feel it was worth it
 					//regular batch files don't work with this program anyways
-					const string extension = ".exe";
+					string extension;
+					if(IsWindows())
+						extension = ".exe";
+					else
+						extension = "";
 					FileInfo[] executables = directory.GetFiles("*" + extension);
 					foreach (FileInfo executable in executables)
 					{
 						//add the name without the extension
 						string name = executable.Name;
+						//Console.WriteLine("Discovered a binary: " + name);
 						string processedName = name.Substring(0, name.Length - extension.Length);
 						pathStrings.Add(processedName);
 					}
@@ -570,6 +590,7 @@ namespace ParacletusConsole
 
 		void Tab()
 		{
+			Console.WriteLine("Tab was pressed");
 			int offset = MainForm.InputBox.SelectionStart;
 			string line = MainForm.InputBox.Text;
 			CommandArguments arguments;
@@ -591,6 +612,7 @@ namespace ParacletusConsole
 			catch (ArgumentException)
 			{
 				//the cursor of the user was not within the boundaries of any argument within the line
+				Console.WriteLine("Cursor not within boundaries");
 				Beep();
 				return;
 			}
@@ -598,12 +620,16 @@ namespace ParacletusConsole
 			if (System.Object.ReferenceEquals(activeArgument, arguments.Command))
 			{
 				//the user is performing the tab within the first unit of the input - that is the command unit
-				tabbableStrings.Concat(PathNames);
+				tabbableStrings.AddRange(PathNames);
+				Console.WriteLine("Command tab detected");
 			}
 			else
 			{
 				//the user is performing the tab within the boundaries of one of the argument units and not the command unit
+				Console.WriteLine("Argument tab detected");
 			}
+
+			Console.WriteLine("Number of tabbable strings: " + tabbableStrings.Count);
 
 			string argumentString = activeArgument.Argument;
 
@@ -611,41 +637,53 @@ namespace ParacletusConsole
 			{
 				//the current argument the user is tabbing in refers to a directory
 				List<string> directoryContent = LoadDirectoryContent(argumentString);
-				tabbableStrings.Concat(directoryContent);
+				tabbableStrings.AddRange(directoryContent);
 			}
 			else
 			{
 				//the tabbed argument either refers to a file or is simply incomplete and refers to neither a file nor a directory
 				//just add the directory it currently refers to then
 				List<string> directoryContent = LoadDirectoryContentsForAPathToAFile(argumentString);
-				tabbableStrings.Concat(directoryContent);
+				tabbableStrings.AddRange(directoryContent);
 			}
 
 			//filter out the strings which do not match the tabbed argument
 			List<string> filteredTabStrings = new List<string>();
 			foreach (string target in tabbableStrings)
 			{
-				if (argumentString == target.Substring(0, argumentString.Length))
+				if (target.Length >= argumentString.Length && argumentString == target.Substring(0, argumentString.Length))
 					filteredTabStrings.Add(target);
 			}
+
+			Console.WriteLine("Count after filtering: " + filteredTabStrings.Count);
 
 			if (filteredTabStrings.Count == 0)
 			{
 				//no matches could be found
+				Console.WriteLine("No matches could be found");
 				Beep();
 				return;
 			}
 
 			string longestCommonSubstring = GetLongestCommonSubstring(filteredTabStrings, argumentString.Length);
+			Console.WriteLine("LCS: " + longestCommonSubstring);
 			if (longestCommonSubstring == argumentString)
 			{
-				//no long match could be found, play a beep
+				//no better match could be found, play a beep
+				Console.WriteLine("Unable to find a better match");
 				Beep();
 				return;
 			}
 
 			//extend the argument accordingly
-			Console.WriteLine(longestCommonSubstring);
+			ArgumentResult modifiedArgument = new ArgumentResult(longestCommonSubstring);
+			string replacement = modifiedArgument.EscapeArgument();
+			string left = line.Substring(0, activeArgument.Offset);
+			string right = line.Substring(activeArgument.Offset + activeArgument.Length());
+			string newLine = left + replacement + right;
+
+			//need to fix the cursor position, it should be at the end of the current argument
+			MainForm.ConsoleBox.Text = newLine;
 		}
 
 		bool PerformCommonSubstringCheck(List<string> input, string sourceString, int offset)
@@ -654,9 +692,15 @@ namespace ParacletusConsole
 			{
 				string currentString = input[i];
 				if (offset >= currentString.Length)
+				{
+					Console.WriteLine("Offset " + offset + " exceeds the length of the string " + currentString);
 					return false;
+				}
 				if (sourceString[offset] != currentString[offset])
+				{
+					Console.WriteLine("String mismatch: " + sourceString + " vs. " + currentString);
 					return false;
+				}
 			}
 			return true;
 		}
@@ -665,12 +709,19 @@ namespace ParacletusConsole
 		{
 			int offset = initialOffset;
 			string sourceString = input.First();
+			Console.WriteLine("Source string: " + sourceString);
 			while (true)
 			{
 				if (offset >= sourceString.Length)
+				{
+					Console.WriteLine("Offset " + offset + " exceeds the length of the source string");
 					break;
+				}
 				if (!PerformCommonSubstringCheck(input, sourceString, offset))
+				{
+					Console.WriteLine("Common substring check failed at offset " + offset);
 					break;
+				}
 				offset++;
 			}
 			return sourceString.Substring(0, offset);

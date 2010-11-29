@@ -12,7 +12,7 @@ namespace ParacletusConsole
 		public int Offset;
 		public bool HasQuotes;
 
-		public ArgumentResult(string argument, int offset, bool hasQuotes)
+		public ArgumentResult(string argument, int offset = 0, bool hasQuotes = false)
 		{
 			Argument = argument;
 			Offset = offset;
@@ -36,6 +36,14 @@ namespace ParacletusConsole
 		{
 			string[] tokens = Argument.Split(Path.DirectorySeparatorChar);
 			return tokens[tokens.Length - 1];
+		}
+
+		public int Length()
+		{
+			int output = Argument.Length;
+			if (HasQuotes)
+				output += 2;
+			return output;
 		}
 	}
 }
