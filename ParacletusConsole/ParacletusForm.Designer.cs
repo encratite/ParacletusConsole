@@ -28,9 +28,15 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConsoleForm));
 			this.ConsoleBox = new System.Windows.Forms.RichTextBox();
 			this.InputBox = new System.Windows.Forms.TextBox();
+			this.TabContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.test1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.test2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.test3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.TabContextMenuStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// ConsoleBox
@@ -63,6 +69,46 @@
 			this.InputBox.TabStop = false;
 			this.InputBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.inputBox_KeyPress);
 			// 
+			// TabContextMenuStrip
+			// 
+			this.TabContextMenuStrip.AutoSize = false;
+			this.TabContextMenuStrip.BackColor = System.Drawing.Color.Black;
+			this.TabContextMenuStrip.Font = new System.Drawing.Font("Lucida Console", 8F);
+			this.TabContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.test1ToolStripMenuItem,
+            this.test2ToolStripMenuItem,
+            this.test3ToolStripMenuItem});
+			this.TabContextMenuStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.VerticalStackWithOverflow;
+			this.TabContextMenuStrip.Name = "contextMenuStrip1";
+			this.TabContextMenuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+			this.TabContextMenuStrip.ShowImageMargin = false;
+			this.TabContextMenuStrip.ShowItemToolTips = false;
+			this.TabContextMenuStrip.Size = new System.Drawing.Size(153, 92);
+			// 
+			// test1ToolStripMenuItem
+			// 
+			this.test1ToolStripMenuItem.ForeColor = System.Drawing.Color.White;
+			this.test1ToolStripMenuItem.Name = "test1ToolStripMenuItem";
+			this.test1ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.test1ToolStripMenuItem.Text = "test1";
+			this.test1ToolStripMenuItem.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// test2ToolStripMenuItem
+			// 
+			this.test2ToolStripMenuItem.ForeColor = System.Drawing.Color.White;
+			this.test2ToolStripMenuItem.Name = "test2ToolStripMenuItem";
+			this.test2ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.test2ToolStripMenuItem.Text = "test2";
+			this.test2ToolStripMenuItem.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// test3ToolStripMenuItem
+			// 
+			this.test3ToolStripMenuItem.ForeColor = System.Drawing.Color.White;
+			this.test3ToolStripMenuItem.Name = "test3ToolStripMenuItem";
+			this.test3ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.test3ToolStripMenuItem.Text = "test3";
+			this.test3ToolStripMenuItem.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
 			// ConsoleForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 11F);
@@ -77,6 +123,7 @@
 			this.Text = "Paracletus";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConsoleForm_FormClosing);
 			this.Load += new System.EventHandler(this.ConsoleForm_Load);
+			this.TabContextMenuStrip.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -86,6 +133,10 @@
 
 		public System.Windows.Forms.RichTextBox ConsoleBox;
 		public System.Windows.Forms.TextBox InputBox;
+		public System.Windows.Forms.ContextMenuStrip TabContextMenuStrip;
+		private System.Windows.Forms.ToolStripMenuItem test1ToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem test2ToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem test3ToolStripMenuItem;
 	}
 }
 

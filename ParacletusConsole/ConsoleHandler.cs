@@ -128,6 +128,10 @@ namespace ParacletusConsole
 				ProgramConfiguration.FormState.Apply(MainForm);
 			PrintPrompt();
 			MainForm.InputBox.Focus();
+			MainForm.TabContextMenuStrip.Show();
+			MainForm.TabContextMenuStrip.Left = MainForm.Left + MainForm.InputBox.Left + 32;
+			MainForm.TabContextMenuStrip.Top = MainForm.Top + MainForm.InputBox.Top - MainForm.TabContextMenuStrip.Height;
+			MainForm.TabContextMenuStrip.BringToFront();
 		}
 
 		void AddCommand(string command, string argumentDescription, string description, CommandHandlerFunction function, int argumentCount)
@@ -496,18 +500,22 @@ namespace ParacletusConsole
 			}
 		}
 
-		void KillProcess()
+		bool KillProcess()
 		{
 			if (Process != null)
+			{
 				Process.Kill();
+				return true;
+			}
+			return false;
 		}
 
 		void Escape()
 		{
 			lock (this)
 			{
-				PrintError("Process has been terminated");
-				KillProcess();
+				if(KillProcess())
+					PrintError("Process has been terminated");
 			}
 		}
 
