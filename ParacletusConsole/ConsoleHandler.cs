@@ -711,11 +711,14 @@ namespace ParacletusConsole
 			ArgumentResult modifiedArgument = new ArgumentResult(longestCommonSubstring);
 			string replacement = modifiedArgument.EscapeArgument();
 			string left = line.Substring(0, activeArgument.Offset);
-			string right = line.Substring(activeArgument.Offset + activeArgument.Length());
+			int rightOffset = activeArgument.Offset + activeArgument.Length();
+			string right = line.Substring(rightOffset);
 			string newLine = left + replacement + right;
+			int newCursorOffset = activeArgument.Offset + replacement.Length;
 
 			//need to fix the cursor position, it should be at the end of the current argument
 			MainForm.InputBox.Text = newLine;
+			MainForm.InputBox.SelectionStart = newCursorOffset;
 		}
 
 		bool PerformCommonSubstringCheck(List<string> input, string sourceString, int offset)
