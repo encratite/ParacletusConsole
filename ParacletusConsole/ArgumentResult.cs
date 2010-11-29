@@ -10,11 +10,13 @@ namespace ParacletusConsole
 	{
 		public string Argument;
 		public int Offset;
+		public bool HasQuotes;
 
-		public ArgumentResult(string argument, int offset)
+		public ArgumentResult(string argument, int offset, bool hasQuotes)
 		{
 			Argument = argument;
 			Offset = offset;
+			HasQuotes = hasQuotes;
 		}
 
 		public bool Match(int offset)

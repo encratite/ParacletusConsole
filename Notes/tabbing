@@ -46,3 +46,5 @@ If the existing argument we are tabbing from is a file:
 	Wait, actually we should check the targeted directory for other files then and still display a popup for it, nevermind
 
 Now we filter out the strings which already mismatch the partial string the user has specified and expand the string as far as possible by calculating the longest common substring.
+The input text is then expanded to that longest common version.
+If the set remaining strings after the filtering step has a cardinality of greater than one, we must display the popup box again.

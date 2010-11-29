@@ -10,13 +10,28 @@ namespace ParacletusConsole
 		public ArgumentResult Command;
 		public ArgumentResult[] Arguments;
 
+		bool ArgumentHasQuotes;
+
 		public CommandArguments(string line)
+		{
+			ProcessLine(line);
+		}
+
+		void ProcessResult(string currentToken, int currentTokenOffset, List<ArgumentResult> tokens)
+		{
+			ArgumentResult newResult = new ArgumentResult(currentToken, currentTokenOffset, ArgumentHasQuotes);
+			tokens.Add(newResult);
+			ArgumentHasQuotes = false;
+		}
+
+		void ProcessLine(string line)
 		{
 			List<ArgumentResult> tokens = new List<ArgumentResult>();
 			string currentToken = "";
 			int currentTokenOffset = 0;
 			bool quoteMode = false;
 			char lastChar = '\x00';
+			ArgumentHasQuotes = false;
 
 			for(int i = 0; i < line.Length; i++)
 			{
@@ -33,8 +48,7 @@ namespace ParacletusConsole
 						{
 							if(currentToken.Length > 0)
 							{
-								ArgumentResult newResult = new ArgumentResult(currentToken, currentTokenOffset);
-								tokens.Add(newResult);
+								ProcessResult(currentToken, currentTokenOffset, tokens);
 								currentToken = "";
 							}
 						}
@@ -50,8 +64,11 @@ namespace ParacletusConsole
 						if (quoteError)
 							throw new ArgumentException("Encountered a quote right after a terminating quote");
 						quoteMode = !quoteMode;
-						if(quoteMode)
+						if (quoteMode)
+						{
+							ArgumentHasQuotes = true;
 							currentTokenOffset = i;
+						}
 						break;
 
 					default:
@@ -69,10 +86,7 @@ namespace ParacletusConsole
 				throw new ArgumentException("Missing quote");
 
 			if (currentToken.Length > 0)
-			{
-				ArgumentResult lastResult = new ArgumentResult(currentToken, currentTokenOffset);
-				tokens.Add(lastResult);
-			}
+				ProcessResult(currentToken, currentTokenOffset, tokens);
 
 			Command = tokens[0];
 			Arguments = tokens.GetRange(1, tokens.Count - 1).ToArray();

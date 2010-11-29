@@ -35,10 +35,12 @@ namespace ParacletusConsole
 		Configuration ProgramConfiguration;
 		bool GotConfiguration;
 
-		private const char VariableSeparator = '$';
-		private const char ColourIdentifier = '#';
+		const char VariableSeparator = '$';
+		const char ColourIdentifier = '#';
 
 		Dictionary<char, KeyPressHandler> KeyPressHandlerDictionary;
+
+		List<string> PathNames;
 
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
@@ -53,6 +55,8 @@ namespace ParacletusConsole
 			LoadConfiguration();
 			InitialiseVariableDictionary();
 			InitialiseKeyPressHandlerDictionary();
+
+			PathNames = LoadPathNames();
 
 			CommandHandlerDictionary = new Dictionary<string, CommandHandler>();
 			AddCommand("cd", "<directory>", "change the working directory", this.ChangeDirectory, 1);
@@ -361,21 +365,27 @@ namespace ParacletusConsole
 			SetOutputColour(ProgramConfiguration.DefaultOutputColour.ToColour());
 		}
 
-		bool PerformChangeDirectoryCheck(string path)
+		bool IsDirectory(string path)
 		{
 			try
 			{
 				FileAttributes attributes = File.GetAttributes(path);
-				if ((attributes & FileAttributes.Directory) != 0)
-				{
-					//this is a directory, it cannot be executed, let's just cd instead
-					System.IO.Directory.SetCurrentDirectory(path);
-					PromptAndSelect();
-					return true;
-				}
+				return (attributes & FileAttributes.Directory) != 0;
 			}
 			catch (FileNotFoundException)
 			{
+			}
+			return false;
+		}
+
+		bool PerformChangeDirectoryCheck(string path)
+		{
+			if (IsDirectory(path))
+			{
+				//this is a directory, it cannot be executed, let's just cd instead
+				System.IO.Directory.SetCurrentDirectory(path);
+				PromptAndSelect();
+				return true;
 			}
 			return false;
 		}
@@ -498,6 +508,49 @@ namespace ParacletusConsole
 			}
 		}
 
+		List<string> LoadDirectoryContent(string path)
+		{
+			List<string> output = new List<string>();
+			DirectoryInfo selectedDirectory = new DirectoryInfo(path);
+			DirectoryInfo[] directories = selectedDirectory.GetDirectories();
+			foreach (DirectoryInfo currentDirectory in directories)
+			{
+				string directoryPath = Path.Combine(path, currentDirectory.Name);
+				output.Add(directoryPath);
+			}
+			FileInfo[] files = selectedDirectory.GetFiles();
+			foreach (FileInfo currentFile in files)
+			{
+				string filePath = Path.Combine(path, currentFile.Name);
+				output.Add(filePath);
+			}
+			return output;
+		}
+
+		List<string> LoadPathNames()
+		{
+			List<string> pathStrings = new List<string>();
+			string pathString = Environment.GetEnvironmentVariable("PATH");
+			string[] tokens = pathString.Split(';');
+			foreach (string path in tokens)
+			{
+				try
+				{
+					DirectoryInfo directory = new DirectoryInfo(path);
+					//we could use PATHEXT extensions instead of just the exe extension at this point but I didn't really feel it was worth it
+					//regular batch files don't work with this program anyways
+					FileInfo[] executables = directory.GetFiles("*.exe");
+					foreach (FileInfo executable in executables)
+						pathStrings.Add(executable.Name);
+				}
+				catch (DirectoryNotFoundException)
+				{
+					//just ignore invalid PATHs for now although we could do the user a favour and inform them about invalid stuff in their PATH
+				}
+			}
+			return pathStrings;
+		}
+
 		void Tab()
 		{
 			int offset = MainForm.InputBox.SelectionStart;
@@ -524,7 +577,26 @@ namespace ParacletusConsole
 				Beep();
 				return;
 			}
-
+			List<string> tabbableStrings = new List<string>();
+			if (System.Object.ReferenceEquals(activeArgument, arguments.Command))
+			{
+				//the user is performing the tab within the first unit of the input - that is the command unit
+				tabbableStrings.Concat(PathNames);
+			}
+			else
+			{
+				//the user is performing the tab within the boundaries of one of the argument units and not the command unit
+			}
+			if (IsDirectory(activeArgument.Argument))
+			{
+				//the current argument the user is tabbing in refers to a directory
+				List<string> directoryContent = LoadDirectoryContent(activeArgument.Argument);
+				tabbableStrings.Concat(directoryContent);
+			}
+			else
+			{
+				//the tabbed argument either refers to a file or is simply incomplete and refers to neither a file nor a directory
+			}
 		}
 
 		void Beep()
