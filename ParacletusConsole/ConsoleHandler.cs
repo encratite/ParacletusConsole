@@ -40,7 +40,7 @@ namespace ParacletusConsole
 
 		Dictionary<char, KeyPressHandler> KeyPressHandlerDictionary;
 
-		List<string> PathNames;
+		HashSet<string> PathNames;
 
 		bool IsWindows;
 
@@ -607,7 +607,7 @@ namespace ParacletusConsole
 			return osString.IndexOf("Windows") != -1;
 		}
 
-		void LoadPathDirectory(List<string> pathStrings, string path)
+		void LoadPathDirectory(HashSet<string> pathStrings, string path)
 		{
 			//Console.WriteLine("Loading PATH: " + path);
 			try
@@ -638,9 +638,9 @@ namespace ParacletusConsole
 			}
 		}
 
-		List<string> LoadPathNames()
+		HashSet<string> LoadPathNames()
 		{
-			List<string> pathStrings = new List<string>();
+			HashSet<string> pathStrings = new HashSet<string>();
 			string pathString = Environment.GetEnvironmentVariable("PATH");
 			char separator;
 			const char windowsPathSeparator = ';';
