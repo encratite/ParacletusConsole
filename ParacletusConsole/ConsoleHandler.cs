@@ -47,13 +47,16 @@ namespace ParacletusConsole
 		Thread AutoCompletionThread;
 		AutoCompletionForm AutoCompletionMatchesForm;
 
+		bool IgnoreLossOfFocus;
+
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
-			consoleForm.ConsoleHandler = this;
+			consoleForm.FormConsoleHandler = this;
 			this.MainForm = consoleForm;
 			Process = null;
 			Terminating = false;
 			ProcessIOActive = false;
+			IgnoreLossOfFocus = false;
 
 			ConfigurationSerialiser = new Nil.Serialiser<Configuration>(Configuration.ConfigurationFile);
 
@@ -163,6 +166,7 @@ namespace ParacletusConsole
 				AutoCompletionMatchesForm.ShowDialog();
 			}
 			);
+			IgnoreLossOfFocus = true;
 			AutoCompletionThread.Start();
 		}
 
@@ -179,6 +183,7 @@ namespace ParacletusConsole
 
 		public void OnAutoCompletionFormLoad()
 		{
+			IgnoreLossOfFocus = false;
 			UpdateAutoCompletionFormPosition();
 			AutoCompletionMatchesForm.TopMost = true;
 			MainForm.Invoke(
@@ -188,6 +193,12 @@ namespace ParacletusConsole
 					MainForm.InputBox.Focus();
 				}
 			);
+		}
+
+		public void OnMainFormLossOfFocus()
+		{
+			if (!IgnoreLossOfFocus)
+				CloseAutoCompletionForm();
 		}
 
 		void AddCommand(string command, string argumentDescription, string description, CommandHandlerFunction function, int argumentCount)

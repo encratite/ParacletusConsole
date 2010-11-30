@@ -75,6 +75,7 @@
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "ConsoleForm";
 			this.Text = "Paracletus";
+			this.Deactivate += new System.EventHandler(this.ConsoleForm_Deactivate);
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConsoleForm_FormClosing);
 			this.Load += new System.EventHandler(this.ConsoleForm_Load);
 			this.LocationChanged += new System.EventHandler(this.ConsoleForm_LocationChanged);

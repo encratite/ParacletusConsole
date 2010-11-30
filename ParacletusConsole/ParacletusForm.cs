@@ -11,7 +11,7 @@ namespace ParacletusConsole
 {
 	public partial class ConsoleForm : Form
 	{
-		public ConsoleHandler ConsoleHandler;
+		public ConsoleHandler FormConsoleHandler;
 
 		public ConsoleForm()
 		{
@@ -20,22 +20,27 @@ namespace ParacletusConsole
 
 		private void inputBox_KeyPress(object sender, KeyPressEventArgs keyEvent)
 		{
-			ConsoleHandler.KeyPressed(keyEvent);
+			FormConsoleHandler.KeyPressed(keyEvent);
 		}
 
 		private void ConsoleForm_Load(object sender, EventArgs e)
 		{
-			ConsoleHandler.OnMainFormLoaded();
+			FormConsoleHandler.OnMainFormLoaded();
 		}
 
 		private void ConsoleForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			ConsoleHandler.Closing();
+			FormConsoleHandler.Closing();
 		}
 
 		private void ConsoleForm_LocationChanged(object sender, EventArgs e)
 		{
-			ConsoleHandler.UpdateAutoCompletionFormPosition();
+			FormConsoleHandler.UpdateAutoCompletionFormPosition();
+		}
+
+		private void ConsoleForm_Deactivate(object sender, EventArgs e)
+		{
+			FormConsoleHandler.OnMainFormLossOfFocus();
 		}
 	}
 }
