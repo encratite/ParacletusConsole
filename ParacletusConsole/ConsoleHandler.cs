@@ -131,11 +131,12 @@ namespace ParacletusConsole
 			ConfigurationSerialiser.Store(ProgramConfiguration);
 		}
 
-		public void FormLoaded()
+		public void OnMainFormLoaded()
 		{
 			if (GotConfiguration)
 				ProgramConfiguration.FormState.Apply(MainForm);
 			PrintPrompt();
+			MainForm.InputBox.Focus();
 		}
 
 		void CloseAutoCompletionForm()

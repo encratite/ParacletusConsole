@@ -25,7 +25,7 @@ namespace ParacletusConsole
 
 		private void ConsoleForm_Load(object sender, EventArgs e)
 		{
-			ConsoleHandler.FormLoaded();
+			ConsoleHandler.OnMainFormLoaded();
 		}
 
 		private void ConsoleForm_FormClosing(object sender, FormClosingEventArgs e)
