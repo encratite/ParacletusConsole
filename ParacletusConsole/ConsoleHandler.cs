@@ -139,7 +139,7 @@ namespace ParacletusConsole
 			MainForm.InputBox.Focus();
 		}
 
-		void CloseAutoCompletionForm()
+		public void CloseAutoCompletionForm()
 		{
 			if (AutoCompletionThread != null)
 			{
@@ -181,6 +181,13 @@ namespace ParacletusConsole
 		{
 			UpdateAutoCompletionFormPosition();
 			AutoCompletionMatchesForm.TopMost = true;
+			MainForm.Invoke(
+				(MethodInvoker)delegate
+				{
+					MainForm.Activate();
+					MainForm.InputBox.Focus();
+				}
+			);
 		}
 
 		void AddCommand(string command, string argumentDescription, string description, CommandHandlerFunction function, int argumentCount)
@@ -783,7 +790,8 @@ namespace ParacletusConsole
 					return;
 				}
 
-				ShowAutoCompletionForm(filteredAutoCompletionStrings);
+				if(filteredAutoCompletionStrings.Count > 1)
+					ShowAutoCompletionForm(filteredAutoCompletionStrings);
 
 				string longestCommonSubstring = GetLongestCommonSubstring(filteredAutoCompletionStrings, argumentString.Length);
 				Console.WriteLine("LCS: " + longestCommonSubstring);
