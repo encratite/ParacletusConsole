@@ -44,6 +44,9 @@ namespace ParacletusConsole
 
 		bool IsWindows;
 
+		Thread TabMatchesThread;
+		TabForm TabMatchesForm;
+
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
 			consoleForm.ConsoleHandler = this;
@@ -53,6 +56,8 @@ namespace ParacletusConsole
 			ProcessIOActive = false;
 
 			ConfigurationSerialiser = new Nil.Serialiser<Configuration>(Configuration.ConfigurationFile);
+
+			TabMatchesForm = new TabForm(MainForm);
 
 			LoadConfiguration();
 			InitialiseVariableDictionary();
@@ -107,6 +112,10 @@ namespace ParacletusConsole
 				MainForm.InputBox.Font = MainFont;
 				MainForm.ConsoleBox.Font = MainFont;
 
+				TabMatchesForm.TabListBox.ForeColor = ProgramConfiguration.DefaultOutputColour.ToColour();
+				TabMatchesForm.TabListBox.BackColor = ProgramConfiguration.BackgroundColour.ToColour();
+				TabMatchesForm.TabListBox.Font = MainFont;
+
 				GotConfiguration = true;
 			}
 			catch (FileNotFoundException)
@@ -127,11 +136,16 @@ namespace ParacletusConsole
 			if (GotConfiguration)
 				ProgramConfiguration.FormState.Apply(MainForm);
 			PrintPrompt();
-			MainForm.InputBox.Focus();
-			MainForm.TabContextMenuStrip.Show();
-			MainForm.TabContextMenuStrip.Left = MainForm.Left + MainForm.InputBox.Left + 32;
-			MainForm.TabContextMenuStrip.Top = MainForm.Top + MainForm.InputBox.Top - MainForm.TabContextMenuStrip.Height;
-			MainForm.TabContextMenuStrip.BringToFront();
+		}
+
+		void DisplayTabForm()
+		{
+			TabMatchesThread = new Thread(() =>
+			{
+				TabMatchesForm.ShowDialog();
+			}
+			);
+			TabMatchesThread.Start();
 		}
 
 		void AddCommand(string command, string argumentDescription, string description, CommandHandlerFunction function, int argumentCount)
@@ -495,6 +509,16 @@ namespace ParacletusConsole
 			lock (this)
 			{
 				Terminating = true;
+				if (TabMatchesThread != null)
+				{
+					TabMatchesForm.Invoke(
+						(MethodInvoker)delegate
+					{
+						TabMatchesForm.Close();
+					}
+					);
+					TabMatchesThread.Join();
+				}
 				SaveConfiguration();
 				KillProcess();
 			}
@@ -720,6 +744,8 @@ namespace ParacletusConsole
 				Beep();
 				return;
 			}
+
+			TabMatchesForm.ShowDialog();
 
 			string longestCommonSubstring = GetLongestCommonSubstring(filteredTabStrings, argumentString.Length);
 			Console.WriteLine("LCS: " + longestCommonSubstring);
