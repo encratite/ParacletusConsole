@@ -77,6 +77,7 @@
 			this.Text = "Paracletus";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConsoleForm_FormClosing);
 			this.Load += new System.EventHandler(this.ConsoleForm_Load);
+			this.LocationChanged += new System.EventHandler(this.ConsoleForm_LocationChanged);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

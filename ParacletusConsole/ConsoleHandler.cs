@@ -165,10 +165,21 @@ namespace ParacletusConsole
 			AutoCompletionThread.Start();
 		}
 
+		public void UpdateAutoCompletionFormPosition()
+		{
+			AutoCompletionMatchesForm.Invoke(
+				(MethodInvoker)delegate
+				{
+					AutoCompletionMatchesForm.Left = MainForm.Left + MainForm.InputBox.Left + 16;
+					AutoCompletionMatchesForm.Top = MainForm.Top + MainForm.InputBox.Top - AutoCompletionMatchesForm.Height;
+				}
+			);
+		}
+
 		public void OnAutoCompletionFormLoad()
 		{
-			AutoCompletionMatchesForm.Left = MainForm.Left + MainForm.InputBox.Left + 16;
-			AutoCompletionMatchesForm.Top = MainForm.Top + MainForm.InputBox.Top - AutoCompletionMatchesForm.Height;
+			UpdateAutoCompletionFormPosition();
+			AutoCompletionMatchesForm.TopMost = true;
 		}
 
 		void AddCommand(string command, string argumentDescription, string description, CommandHandlerFunction function, int argumentCount)

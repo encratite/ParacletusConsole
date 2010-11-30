@@ -32,5 +32,10 @@ namespace ParacletusConsole
 		{
 			ConsoleHandler.Closing();
 		}
+
+		private void ConsoleForm_LocationChanged(object sender, EventArgs e)
+		{
+			ConsoleHandler.UpdateAutoCompletionFormPosition();
+		}
 	}
 }
