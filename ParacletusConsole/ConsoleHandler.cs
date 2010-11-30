@@ -725,19 +725,21 @@ namespace ParacletusConsole
 					return;
 				}
 				string argumentString = activeArgument.Argument;
-				List<string> autoCompletionStrings = new List<string>();
+				HashSet<string> autoCompletionStrings = new HashSet<string>();
 				if (System.Object.ReferenceEquals(activeArgument, arguments.Command))
 				{
 					//the user is performing the tab within the first unit of the input - that is the command unit
 					Console.WriteLine("Command tab detected");
-					autoCompletionStrings.AddRange(PathNames);
+					foreach (string i in PathNames)
+						autoCompletionStrings.Add(i);
 				}
 				else
 				{
 					//the user is performing the tab within the boundaries of one of the argument units and not the command unit
 					Console.WriteLine("Argument tab detected");
 					List<string> currentDirectory = LoadDirectoryContentsForAPathToAFile(argumentString);
-					autoCompletionStrings.AddRange(currentDirectory);
+					foreach(string i in currentDirectory)
+						autoCompletionStrings.Add(i);
 				}
 
 				Console.WriteLine("Number of auto completion strings: " + autoCompletionStrings.Count);
@@ -746,14 +748,16 @@ namespace ParacletusConsole
 				{
 					//the current argument the user is tabbing in refers to a directory
 					List<string> directoryContent = LoadDirectoryContent(argumentString);
-					autoCompletionStrings.AddRange(directoryContent);
+					foreach (string i in directoryContent)
+						autoCompletionStrings.Add(i);
 				}
 				else
 				{
 					//the tabbed argument either refers to a file or is simply incomplete and refers to neither a file nor a directory
 					//just add the directory it currently refers to then
 					List<string> directoryContent = LoadDirectoryContentsForAPathToAFile(argumentString);
-					autoCompletionStrings.AddRange(directoryContent);
+					foreach (string i in directoryContent)
+						autoCompletionStrings.Add(i);
 				}
 
 				//filter out the strings which do not match the tabbed argument
