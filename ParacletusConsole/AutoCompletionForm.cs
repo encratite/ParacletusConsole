@@ -11,18 +11,17 @@ namespace ParacletusConsole
 {
 	public partial class AutoCompletionForm : Form
 	{
-		ConsoleForm MainForm;
+		ConsoleHandler Handler;
 
-		public AutoCompletionForm(ConsoleForm mainForm)
+		public AutoCompletionForm(ConsoleHandler handler)
 		{
 			InitializeComponent();
-			MainForm = mainForm;
+			Handler = handler;
 		}
 
 		private void TabForm_Load(object sender, EventArgs e)
 		{
-			Left = MainForm.Left + MainForm.InputBox.Left;
-			Top = MainForm.Top + MainForm.InputBox.Top;
+			Handler.OnAutoCompletionFormLoad();
 		}
 	}
 }

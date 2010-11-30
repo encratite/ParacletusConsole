@@ -57,7 +57,7 @@ namespace ParacletusConsole
 
 			ConfigurationSerialiser = new Nil.Serialiser<Configuration>(Configuration.ConfigurationFile);
 
-			AutoCompletionMatchesForm = new AutoCompletionForm(MainForm);
+			AutoCompletionMatchesForm = new AutoCompletionForm(this);
 
 			LoadConfiguration();
 			InitialiseVariableDictionary();
@@ -138,14 +138,37 @@ namespace ParacletusConsole
 			PrintPrompt();
 		}
 
-		void DisplayTabForm()
+		void CloseAutoCompletionForm()
+		{
+			if (AutoCompletionThread != null)
+			{
+				AutoCompletionMatchesForm.Invoke(
+					(MethodInvoker)delegate
+					{
+						AutoCompletionMatchesForm.AutoCompletionListBox.Items.Clear();
+						AutoCompletionMatchesForm.Close();
+					}
+				);
+				AutoCompletionThread.Join();
+				AutoCompletionThread = null;
+			}
+		}
+
+		void ShowAutoCompletionForm(List<string> autoCompletionStrings)
 		{
 			AutoCompletionThread = new Thread(() =>
 			{
+				AutoCompletionMatchesForm.AutoCompletionListBox.Items.AddRange(autoCompletionStrings.ToArray());
 				AutoCompletionMatchesForm.ShowDialog();
 			}
 			);
 			AutoCompletionThread.Start();
+		}
+
+		public void OnAutoCompletionFormLoad()
+		{
+			AutoCompletionMatchesForm.Left = MainForm.Left + MainForm.InputBox.Left + 16;
+			AutoCompletionMatchesForm.Top = MainForm.Top + MainForm.InputBox.Top - AutoCompletionMatchesForm.Height;
 		}
 
 		void AddCommand(string command, string argumentDescription, string description, CommandHandlerFunction function, int argumentCount)
@@ -331,6 +354,8 @@ namespace ParacletusConsole
 		{
 			lock (this)
 			{
+				CloseAutoCompletionForm();
+
 				if (Process == null)
 					ProcessRegularEnter();
 				else
@@ -504,21 +529,6 @@ namespace ParacletusConsole
 			}
 		}
 
-		void CloseAutoCompletionForm()
-		{
-			if (AutoCompletionThread != null)
-			{
-				AutoCompletionMatchesForm.Invoke(
-					(MethodInvoker)delegate
-					{
-						AutoCompletionMatchesForm.Close();
-					}
-				);
-				AutoCompletionThread.Join();
-				AutoCompletionThread = null;
-			}
-		}
-
 		public void Closing()
 		{
 			lock (this)
@@ -544,6 +554,8 @@ namespace ParacletusConsole
 		{
 			lock (this)
 			{
+				CloseAutoCompletionForm();
+
 				if(KillProcess())
 					PrintError("Process has been terminated");
 			}
@@ -671,110 +683,115 @@ namespace ParacletusConsole
 
 		void Tab()
 		{
-			Console.WriteLine("Tab was pressed");
-			int offset = MainForm.InputBox.SelectionStart;
-			string line = MainForm.InputBox.Text;
-			CommandArguments arguments;
-			try
+			lock (this)
 			{
-				arguments = new CommandArguments(line);
-			}
-			catch (ArgumentException)
-			{
-				//there was a missing quote - this could possibly be handed by automatically attaching another quote at the end
-				Beep();
-				return;
-			}
-			ArgumentResult activeArgument;
-			try
-			{
-				activeArgument = arguments.FindMatchingResult(offset);
-			}
-			catch (ArgumentException)
-			{
-				//the cursor of the user was not within the boundaries of any argument within the line
-				Console.WriteLine("Cursor not within boundaries");
-				Beep();
-				return;
-			}
-			string argumentString = activeArgument.Argument;
-			List<string> tabbableStrings = new List<string>();
-			if (System.Object.ReferenceEquals(activeArgument, arguments.Command))
-			{
-				//the user is performing the tab within the first unit of the input - that is the command unit
-				Console.WriteLine("Command tab detected");
-				tabbableStrings.AddRange(PathNames);
-			}
-			else
-			{
-				//the user is performing the tab within the boundaries of one of the argument units and not the command unit
-				Console.WriteLine("Argument tab detected");
-				List<string> currentDirectory = LoadDirectoryContentsForAPathToAFile(argumentString);
-				tabbableStrings.AddRange(currentDirectory);
-			}
+				CloseAutoCompletionForm();
 
-			Console.WriteLine("Number of tabbable strings: " + tabbableStrings.Count);
+				Console.WriteLine("Tab was pressed");
+				int offset = MainForm.InputBox.SelectionStart;
+				string line = MainForm.InputBox.Text;
+				CommandArguments arguments;
+				try
+				{
+					arguments = new CommandArguments(line);
+				}
+				catch (ArgumentException)
+				{
+					//there was a missing quote - this could possibly be handed by automatically attaching another quote at the end
+					Beep();
+					return;
+				}
+				ArgumentResult activeArgument;
+				try
+				{
+					activeArgument = arguments.FindMatchingResult(offset);
+				}
+				catch (ArgumentException)
+				{
+					//the cursor of the user was not within the boundaries of any argument within the line
+					Console.WriteLine("Cursor not within boundaries");
+					Beep();
+					return;
+				}
+				string argumentString = activeArgument.Argument;
+				List<string> autoCompletionStrings = new List<string>();
+				if (System.Object.ReferenceEquals(activeArgument, arguments.Command))
+				{
+					//the user is performing the tab within the first unit of the input - that is the command unit
+					Console.WriteLine("Command tab detected");
+					autoCompletionStrings.AddRange(PathNames);
+				}
+				else
+				{
+					//the user is performing the tab within the boundaries of one of the argument units and not the command unit
+					Console.WriteLine("Argument tab detected");
+					List<string> currentDirectory = LoadDirectoryContentsForAPathToAFile(argumentString);
+					autoCompletionStrings.AddRange(currentDirectory);
+				}
 
-			if (IsDirectory(argumentString))
-			{
-				//the current argument the user is tabbing in refers to a directory
-				List<string> directoryContent = LoadDirectoryContent(argumentString);
-				tabbableStrings.AddRange(directoryContent);
+				Console.WriteLine("Number of auto completion strings: " + autoCompletionStrings.Count);
+
+				if (IsDirectory(argumentString))
+				{
+					//the current argument the user is tabbing in refers to a directory
+					List<string> directoryContent = LoadDirectoryContent(argumentString);
+					autoCompletionStrings.AddRange(directoryContent);
+				}
+				else
+				{
+					//the tabbed argument either refers to a file or is simply incomplete and refers to neither a file nor a directory
+					//just add the directory it currently refers to then
+					List<string> directoryContent = LoadDirectoryContentsForAPathToAFile(argumentString);
+					autoCompletionStrings.AddRange(directoryContent);
+				}
+
+				//filter out the strings which do not match the tabbed argument
+				List<string> filteredAutoCompletionStrings = new List<string>();
+				foreach (string target in autoCompletionStrings)
+				{
+					if
+					(
+						target.Length >= argumentString.Length &&
+						CaseInsensitiveStringComparison(argumentString, target.Substring(0, argumentString.Length))
+					)
+						filteredAutoCompletionStrings.Add(target);
+				}
+
+				Console.WriteLine("Count after filtering: " + filteredAutoCompletionStrings.Count);
+
+				if (filteredAutoCompletionStrings.Count == 0)
+				{
+					//no matches could be found
+					Console.WriteLine("No matches could be found");
+					Beep();
+					return;
+				}
+
+				ShowAutoCompletionForm(filteredAutoCompletionStrings);
+
+				string longestCommonSubstring = GetLongestCommonSubstring(filteredAutoCompletionStrings, argumentString.Length);
+				Console.WriteLine("LCS: " + longestCommonSubstring);
+				if (longestCommonSubstring == argumentString)
+				{
+					//no better match could be found, play a beep
+					Console.WriteLine("Unable to find a better match");
+					Beep();
+					return;
+				}
+
+				//extend the argument accordingly
+				ArgumentResult modifiedArgument = new ArgumentResult(longestCommonSubstring);
+				string replacement = modifiedArgument.EscapeArgument();
+				string left = line.Substring(0, activeArgument.Offset);
+				int rightOffset = activeArgument.Offset + activeArgument.Length();
+				string right = line.Substring(rightOffset);
+				string newLine = left + replacement + right;
+				int newCursorOffset = activeArgument.Offset + replacement.Length;
+
+				//need to fix the cursor position, it should be at the end of the current argument
+				MainForm.InputBox.Text = newLine;
+				MainForm.InputBox.SelectionStart = newCursorOffset;
 			}
-			else
-			{
-				//the tabbed argument either refers to a file or is simply incomplete and refers to neither a file nor a directory
-				//just add the directory it currently refers to then
-				List<string> directoryContent = LoadDirectoryContentsForAPathToAFile(argumentString);
-				tabbableStrings.AddRange(directoryContent);
-			}
-
-			//filter out the strings which do not match the tabbed argument
-			List<string> filteredTabStrings = new List<string>();
-			foreach (string target in tabbableStrings)
-			{
-				if
-				(
-					target.Length >= argumentString.Length &&
-					CaseInsensitiveStringComparison(argumentString, target.Substring(0, argumentString.Length))
-				)
-					filteredTabStrings.Add(target);
-			}
-
-			Console.WriteLine("Count after filtering: " + filteredTabStrings.Count);
-
-			if (filteredTabStrings.Count == 0)
-			{
-				//no matches could be found
-				Console.WriteLine("No matches could be found");
-				Beep();
-				return;
-			}
-
-			AutoCompletionMatchesForm.ShowDialog();
-
-			string longestCommonSubstring = GetLongestCommonSubstring(filteredTabStrings, argumentString.Length);
-			Console.WriteLine("LCS: " + longestCommonSubstring);
-			if (longestCommonSubstring == argumentString)
-			{
-				//no better match could be found, play a beep
-				Console.WriteLine("Unable to find a better match");
-				Beep();
-				return;
-			}
-
-			//extend the argument accordingly
-			ArgumentResult modifiedArgument = new ArgumentResult(longestCommonSubstring);
-			string replacement = modifiedArgument.EscapeArgument();
-			string left = line.Substring(0, activeArgument.Offset);
-			int rightOffset = activeArgument.Offset + activeArgument.Length();
-			string right = line.Substring(rightOffset);
-			string newLine = left + replacement + right;
-			int newCursorOffset = activeArgument.Offset + replacement.Length;
-
-			//need to fix the cursor position, it should be at the end of the current argument
-			MainForm.InputBox.Text = newLine;
-			MainForm.InputBox.SelectionStart = newCursorOffset;
 		}
 
 		bool PerformCommonSubstringCheck(List<string> input, string sourceString, int offset)

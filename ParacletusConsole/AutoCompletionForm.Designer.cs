@@ -52,6 +52,7 @@
 			this.Name = "AutoCompletionForm";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
+			this.TopMost = true;
 			this.Load += new System.EventHandler(this.TabForm_Load);
 			this.ResumeLayout(false);
 
