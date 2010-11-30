@@ -9,11 +9,11 @@ using System.Windows.Forms;
 
 namespace ParacletusConsole
 {
-	public partial class TabForm : Form
+	public partial class AutoCompletionForm : Form
 	{
 		ConsoleForm MainForm;
 
-		public TabForm(ConsoleForm mainForm)
+		public AutoCompletionForm(ConsoleForm mainForm)
 		{
 			InitializeComponent();
 			MainForm = mainForm;

@@ -1,6 +1,6 @@
 ﻿namespace ParacletusConsole
 {
-	partial class TabForm
+	partial class AutoCompletionForm
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -28,28 +28,28 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TabForm));
-			this.TabListBox = new System.Windows.Forms.ListBox();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AutoCompletionForm));
+			this.AutoCompletionListBox = new System.Windows.Forms.ListBox();
 			this.SuspendLayout();
 			// 
-			// TabListBox
+			// AutoCompletionListBox
 			// 
-			this.TabListBox.BackColor = System.Drawing.Color.Black;
-			resources.ApplyResources(this.TabListBox, "TabListBox");
-			this.TabListBox.ForeColor = System.Drawing.Color.White;
-			this.TabListBox.FormattingEnabled = true;
-			this.TabListBox.Name = "TabListBox";
+			this.AutoCompletionListBox.BackColor = System.Drawing.Color.Black;
+			resources.ApplyResources(this.AutoCompletionListBox, "AutoCompletionListBox");
+			this.AutoCompletionListBox.ForeColor = System.Drawing.Color.White;
+			this.AutoCompletionListBox.FormattingEnabled = true;
+			this.AutoCompletionListBox.Name = "AutoCompletionListBox";
 			// 
-			// TabForm
+			// AutoCompletionForm
 			// 
 			resources.ApplyResources(this, "$this");
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.Black;
 			this.ControlBox = false;
-			this.Controls.Add(this.TabListBox);
+			this.Controls.Add(this.AutoCompletionListBox);
 			this.ForeColor = System.Drawing.Color.White;
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-			this.Name = "TabForm";
+			this.Name = "AutoCompletionForm";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.Load += new System.EventHandler(this.TabForm_Load);
@@ -59,6 +59,6 @@
 
 		#endregion
 
-		public System.Windows.Forms.ListBox TabListBox;
+		public System.Windows.Forms.ListBox AutoCompletionListBox;
 	}
 }

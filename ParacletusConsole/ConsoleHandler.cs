@@ -44,8 +44,8 @@ namespace ParacletusConsole
 
 		bool IsWindows;
 
-		Thread TabMatchesThread;
-		TabForm TabMatchesForm;
+		Thread AutoCompletionThread;
+		AutoCompletionForm AutoCompletionMatchesForm;
 
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
@@ -57,7 +57,7 @@ namespace ParacletusConsole
 
 			ConfigurationSerialiser = new Nil.Serialiser<Configuration>(Configuration.ConfigurationFile);
 
-			TabMatchesForm = new TabForm(MainForm);
+			AutoCompletionMatchesForm = new AutoCompletionForm(MainForm);
 
 			LoadConfiguration();
 			InitialiseVariableDictionary();
@@ -112,9 +112,9 @@ namespace ParacletusConsole
 				MainForm.InputBox.Font = MainFont;
 				MainForm.ConsoleBox.Font = MainFont;
 
-				TabMatchesForm.TabListBox.ForeColor = ProgramConfiguration.DefaultOutputColour.ToColour();
-				TabMatchesForm.TabListBox.BackColor = ProgramConfiguration.BackgroundColour.ToColour();
-				TabMatchesForm.TabListBox.Font = MainFont;
+				AutoCompletionMatchesForm.AutoCompletionListBox.ForeColor = ProgramConfiguration.DefaultOutputColour.ToColour();
+				AutoCompletionMatchesForm.AutoCompletionListBox.BackColor = ProgramConfiguration.BackgroundColour.ToColour();
+				AutoCompletionMatchesForm.AutoCompletionListBox.Font = MainFont;
 
 				GotConfiguration = true;
 			}
@@ -140,12 +140,12 @@ namespace ParacletusConsole
 
 		void DisplayTabForm()
 		{
-			TabMatchesThread = new Thread(() =>
+			AutoCompletionThread = new Thread(() =>
 			{
-				TabMatchesForm.ShowDialog();
+				AutoCompletionMatchesForm.ShowDialog();
 			}
 			);
-			TabMatchesThread.Start();
+			AutoCompletionThread.Start();
 		}
 
 		void AddCommand(string command, string argumentDescription, string description, CommandHandlerFunction function, int argumentCount)
@@ -504,21 +504,27 @@ namespace ParacletusConsole
 			}
 		}
 
+		void CloseAutoCompletionForm()
+		{
+			if (AutoCompletionThread != null)
+			{
+				AutoCompletionMatchesForm.Invoke(
+					(MethodInvoker)delegate
+					{
+						AutoCompletionMatchesForm.Close();
+					}
+				);
+				AutoCompletionThread.Join();
+				AutoCompletionThread = null;
+			}
+		}
+
 		public void Closing()
 		{
 			lock (this)
 			{
 				Terminating = true;
-				if (TabMatchesThread != null)
-				{
-					TabMatchesForm.Invoke(
-						(MethodInvoker)delegate
-					{
-						TabMatchesForm.Close();
-					}
-					);
-					TabMatchesThread.Join();
-				}
+				CloseAutoCompletionForm();
 				SaveConfiguration();
 				KillProcess();
 			}
@@ -745,7 +751,7 @@ namespace ParacletusConsole
 				return;
 			}
 
-			TabMatchesForm.ShowDialog();
+			AutoCompletionMatchesForm.ShowDialog();
 
 			string longestCommonSubstring = GetLongestCommonSubstring(filteredTabStrings, argumentString.Length);
 			Console.WriteLine("LCS: " + longestCommonSubstring);
