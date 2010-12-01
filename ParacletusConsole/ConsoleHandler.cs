@@ -141,8 +141,6 @@ namespace ParacletusConsole
 
 		void CloseAutoCompletionForm()
 		{
-			Console.WriteLine("CloseAutoCompletionForm");
-
 			if (AutoCompletionThread != null)
 			{
 				if (Thread.CurrentThread == AutoCompletionThread)
@@ -152,7 +150,6 @@ namespace ParacletusConsole
 				}
 				else
 				{
-					Console.WriteLine("CloseAutoCompletionForm thread is not null");
 					AutoCompletionMatchesForm.Invoke(
 						(MethodInvoker)delegate
 						{
@@ -208,15 +205,11 @@ namespace ParacletusConsole
 
 		public void OnMainFormLossOfFocus()
 		{
-			Console.WriteLine("Loss of focus");
 			AutoCompletionMatchesForm.Invoke(
 			(MethodInvoker)delegate
 				{
 					if (!(AutoCompletionMatchesForm.Focused || AutoCompletionMatchesForm.AutoCompletionListBox.Focused))
-					{
-						Console.WriteLine("The auto completion listbox does not have the focus");
 						CloseAutoCompletionForm();
-					}
 				}
 			);
 		}
@@ -237,8 +230,6 @@ namespace ParacletusConsole
 
 		void ProcessListBoxDoubleClick(string entry)
 		{
-			Console.WriteLine("Double click detected");
-
 			string line = MainForm.InputBox.Text;
 			int offset = MainForm.InputBox.SelectionStart;
 			CommandArguments arguments;
@@ -676,13 +667,11 @@ namespace ParacletusConsole
 		bool IsWindowsOS()
 		{
 			string osString = System.Environment.OSVersion.ToString();
-			//Console.WriteLine("OS: " + osString);
 			return osString.IndexOf("Windows") != -1;
 		}
 
 		void LoadPathDirectory(HashSet<string> pathStrings, string path)
 		{
-			//Console.WriteLine("Loading PATH: " + path);
 			try
 			{
 				DirectoryInfo directory = new DirectoryInfo(path);
@@ -698,7 +687,6 @@ namespace ParacletusConsole
 				{
 					//add the name without the extension
 					string name = executable.Name;
-					//Console.WriteLine("Discovered a binary: " + name);
 					//string processedName = name.Substring(0, name.Length - extension.Length);
 					//let's just add the full names for now, for great justice!
 					string processedName = name.Substring(0, name.Length);
@@ -772,7 +760,6 @@ namespace ParacletusConsole
 			{
 				CloseAutoCompletionForm();
 
-				Console.WriteLine("Tab was pressed");
 				int offset = MainForm.InputBox.SelectionStart;
 				string line = MainForm.InputBox.Text;
 				CommandArguments arguments;
@@ -794,7 +781,6 @@ namespace ParacletusConsole
 				catch (ArgumentException)
 				{
 					//the cursor of the user was not within the boundaries of any argument within the line
-					Console.WriteLine("Cursor not within boundaries");
 					Beep();
 					return;
 				}
@@ -803,20 +789,16 @@ namespace ParacletusConsole
 				if (System.Object.ReferenceEquals(activeArgument, arguments.Command))
 				{
 					//the user is performing the tab within the first unit of the input - that is the command unit
-					Console.WriteLine("Command tab detected");
 					foreach (string i in PathNames)
 						autoCompletionStrings.Add(i);
 				}
 				else
 				{
 					//the user is performing the tab within the boundaries of one of the argument units and not the command unit
-					Console.WriteLine("Argument tab detected");
 					List<string> currentDirectory = LoadDirectoryContentsForAPathToAFile(argumentString);
 					foreach(string i in currentDirectory)
 						autoCompletionStrings.Add(i);
 				}
-
-				Console.WriteLine("Number of auto completion strings: " + autoCompletionStrings.Count);
 
 				if (IsDirectory(argumentString))
 				{
@@ -846,12 +828,9 @@ namespace ParacletusConsole
 						filteredAutoCompletionStrings.Add(target);
 				}
 
-				Console.WriteLine("Count after filtering: " + filteredAutoCompletionStrings.Count);
-
 				if (filteredAutoCompletionStrings.Count == 0)
 				{
 					//no matches could be found
-					Console.WriteLine("No matches could be found");
 					Beep();
 					return;
 				}
@@ -860,11 +839,9 @@ namespace ParacletusConsole
 					ShowAutoCompletionForm(filteredAutoCompletionStrings);
 
 				string longestCommonSubstring = GetLongestCommonSubstring(filteredAutoCompletionStrings, argumentString.Length);
-				Console.WriteLine("LCS: " + longestCommonSubstring);
 				if (longestCommonSubstring == argumentString)
 				{
 					//no better match could be found, play a beep
-					Console.WriteLine("Unable to find a better match");
 					Beep();
 					return;
 				}
@@ -895,15 +872,9 @@ namespace ParacletusConsole
 			{
 				string currentString = input[i];
 				if (offset >= currentString.Length)
-				{
-					Console.WriteLine("Offset " + offset + " exceeds the length of the string " + currentString);
 					return false;
-				}
 				if (!CaseInsensitiveCharacterComparison(sourceString[offset], currentString[offset]))
-				{
-					Console.WriteLine("String mismatch: " + sourceString + " vs. " + currentString);
 					return false;
-				}
 			}
 			return true;
 		}
@@ -912,19 +883,12 @@ namespace ParacletusConsole
 		{
 			int offset = initialOffset;
 			string sourceString = input.First();
-			Console.WriteLine("Source string: " + sourceString);
 			while (true)
 			{
 				if (offset >= sourceString.Length)
-				{
-					Console.WriteLine("Offset " + offset + " exceeds the length of the source string");
 					break;
-				}
 				if (!PerformCommonSubstringCheck(input, sourceString, offset))
-				{
-					Console.WriteLine("Common substring check failed at offset " + offset);
 					break;
-				}
 				offset++;
 			}
 			return sourceString.Substring(0, offset);
