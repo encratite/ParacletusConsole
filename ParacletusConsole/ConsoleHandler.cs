@@ -47,8 +47,6 @@ namespace ParacletusConsole
 		Thread AutoCompletionThread;
 		AutoCompletionForm AutoCompletionMatchesForm;
 
-		bool IgnoreLossOfFocus;
-
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
 			consoleForm.FormConsoleHandler = this;
@@ -56,7 +54,6 @@ namespace ParacletusConsole
 			Process = null;
 			Terminating = false;
 			ProcessIOActive = false;
-			IgnoreLossOfFocus = true;
 
 			ConfigurationSerialiser = new Nil.Serialiser<Configuration>(Configuration.ConfigurationFile);
 
@@ -142,21 +139,36 @@ namespace ParacletusConsole
 			MainForm.InputBox.Focus();
 		}
 
-		public void CloseAutoCompletionForm()
+		void CloseAutoCompletionForm()
 		{
+			Console.WriteLine("CloseAutoCompletionForm");
+
 			if (AutoCompletionThread != null)
 			{
-				AutoCompletionMatchesForm.Invoke(
-					(MethodInvoker)delegate
-					{
-						AutoCompletionMatchesForm.AutoCompletionListBox.Items.Clear();
-						AutoCompletionMatchesForm.Close();
-					}
-				);
-				AutoCompletionThread.Join();
-				AutoCompletionThread = null;
-				IgnoreLossOfFocus = true;
+				if (Thread.CurrentThread == AutoCompletionThread)
+				{
+					AutoCompletionThread = null;
+					ActualCloseAutoCompletionForm();
+				}
+				else
+				{
+					Console.WriteLine("CloseAutoCompletionForm thread is not null");
+					AutoCompletionMatchesForm.Invoke(
+						(MethodInvoker)delegate
+						{
+							ActualCloseAutoCompletionForm();
+						}
+					);
+					AutoCompletionThread.Join();
+					AutoCompletionThread = null;
+				}
 			}
+		}
+
+		void ActualCloseAutoCompletionForm()
+		{
+			AutoCompletionMatchesForm.AutoCompletionListBox.Items.Clear();
+			AutoCompletionMatchesForm.Close();
 		}
 
 		void ShowAutoCompletionForm(List<string> autoCompletionStrings)
@@ -168,7 +180,6 @@ namespace ParacletusConsole
 			}
 			);
 			AutoCompletionThread.Start();
-			IgnoreLossOfFocus = false;
 		}
 
 		public void UpdateAutoCompletionFormPosition()
@@ -197,48 +208,51 @@ namespace ParacletusConsole
 
 		public void OnMainFormLossOfFocus()
 		{
-			if (!IgnoreLossOfFocus)
-			{
-				AutoCompletionMatchesForm.Invoke(
-				(MethodInvoker)delegate
-					{
-						if (!AutoCompletionMatchesForm.AutoCompletionListBox.Focused)
-							CloseAutoCompletionForm();
-					}
-				);
-			}
-		}
-
-		public void OnListBoxDoubleClick(string entry)
-		{
-			MainForm.InputBox.Invoke(
-				(MethodInvoker)delegate
+			Console.WriteLine("Loss of focus");
+			AutoCompletionMatchesForm.Invoke(
+			(MethodInvoker)delegate
 				{
-					ProcessListBoxDoubleClick(entry);
+					if (!(AutoCompletionMatchesForm.Focused || AutoCompletionMatchesForm.AutoCompletionListBox.Focused))
+					{
+						Console.WriteLine("The auto completion listbox does not have the focus");
+						CloseAutoCompletionForm();
+					}
 				}
 			);
 		}
 
-		void ProcessListBoxDoubleClick(string entry)
+		public void OnListBoxDoubleClick(string entry)
 		{
 			lock (this)
 			{
-				string line = MainForm.InputBox.Text;
-				int offset = MainForm.InputBox.SelectionStart;
-				CommandArguments arguments;
-				ArgumentResult activeArgument;
-				try
-				{
-					arguments = new CommandArguments(line);
-					activeArgument = arguments.FindMatchingResult(offset);
-					PerformInputBoxReplacement(line, entry, activeArgument);
-					CloseAutoCompletionForm();
-				}
-				catch (ArgumentException)
-				{
-					Beep();
-					return;
-				}
+				MainForm.InputBox.Invoke(
+					(MethodInvoker)delegate
+					{
+						ProcessListBoxDoubleClick(entry);
+					}
+				);
+				CloseAutoCompletionForm();
+			}
+		}
+
+		void ProcessListBoxDoubleClick(string entry)
+		{
+			Console.WriteLine("Double click detected");
+
+			string line = MainForm.InputBox.Text;
+			int offset = MainForm.InputBox.SelectionStart;
+			CommandArguments arguments;
+			ArgumentResult activeArgument;
+			try
+			{
+				arguments = new CommandArguments(line);
+				activeArgument = arguments.FindMatchingResult(offset);
+				PerformInputBoxReplacement(line, entry, activeArgument);
+			}
+			catch (ArgumentException)
+			{
+				Beep();
+				return;
 			}
 		}
 
