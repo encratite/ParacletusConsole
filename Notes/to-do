@@ -1,2 +1,8 @@
-Double clicks on the auto completion list should perform replacements
+To do:
+
 The auto completion list should be auto height and width adjusted up to a certain maximum
+When one is tabbing, the auto completion does not replace the rest of the path in the previous directories, this can lead to some nasty strings and even broken concatenations
+
+Done:
+
+Double clicks on the auto completion list should perform replacements

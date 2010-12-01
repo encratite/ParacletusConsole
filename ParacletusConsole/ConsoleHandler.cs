@@ -748,7 +748,7 @@ namespace ParacletusConsole
 			}
 			else
 			{
-				directoryPath = path.Substring(0, offset);
+				directoryPath = path.Substring(0, offset + 1);
 				removePrefix = false;
 			}
 			return LoadDirectoryContent(directoryPath, removePrefix);
@@ -785,6 +785,11 @@ namespace ParacletusConsole
 					return;
 				}
 				string argumentString = activeArgument.Argument;
+
+				//fix for weird tabbing behaviour on Windows for strings like "c:"
+				if (IsWindows && argumentString.Length == 2 && Char.IsLetter(argumentString[0]) && argumentString[1] == ':')
+					argumentString += Path.DirectorySeparatorChar;
+
 				HashSet<string> autoCompletionStrings = new HashSet<string>();
 				if (System.Object.ReferenceEquals(activeArgument, arguments.Command))
 				{
