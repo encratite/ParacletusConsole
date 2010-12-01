@@ -6,3 +6,5 @@ When one is tabbing, the auto completion does not replace the rest of the path i
 Done:
 
 Double clicks on the auto completion list should perform replacements
+There is still some exception oddity: A first chance exception of type 'System.InvalidOperationException' occurred in System.Windows.Forms.dll
+	(This was a result of some missing checks on position updates etc)

@@ -181,13 +181,16 @@ namespace ParacletusConsole
 
 		public void UpdateAutoCompletionFormPosition()
 		{
-			AutoCompletionMatchesForm.Invoke(
-				(MethodInvoker)delegate
-				{
-					AutoCompletionMatchesForm.Left = MainForm.Left + MainForm.InputBox.Left + 16;
-					AutoCompletionMatchesForm.Top = MainForm.Top + MainForm.InputBox.Top - AutoCompletionMatchesForm.Height;
-				}
-			);
+			if (AutoCompletionThread != null)
+			{
+				AutoCompletionMatchesForm.Invoke(
+					(MethodInvoker)delegate
+					{
+						AutoCompletionMatchesForm.Left = MainForm.Left + MainForm.InputBox.Left + 16;
+						AutoCompletionMatchesForm.Top = MainForm.Top + MainForm.InputBox.Top - AutoCompletionMatchesForm.Height;
+					}
+				);
+			}
 		}
 
 		public void OnAutoCompletionFormLoad()
@@ -205,13 +208,16 @@ namespace ParacletusConsole
 
 		public void OnMainFormLossOfFocus()
 		{
-			AutoCompletionMatchesForm.Invoke(
-			(MethodInvoker)delegate
-				{
-					if (!(AutoCompletionMatchesForm.Focused || AutoCompletionMatchesForm.AutoCompletionListBox.Focused))
-						CloseAutoCompletionForm();
-				}
-			);
+			if (AutoCompletionThread != null)
+			{
+				AutoCompletionMatchesForm.Invoke(
+				(MethodInvoker)delegate
+					{
+						if (!(AutoCompletionMatchesForm.Focused || AutoCompletionMatchesForm.AutoCompletionListBox.Focused))
+							CloseAutoCompletionForm();
+					}
+				);
+			}
 		}
 
 		public void OnListBoxDoubleClick(string entry)
