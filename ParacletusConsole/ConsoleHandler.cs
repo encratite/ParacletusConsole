@@ -48,6 +48,10 @@ namespace ParacletusConsole
 		AutoCompletionForm AutoCompletionMatchesForm;
 
 		int OriginalAutoListBoxHeight;
+		
+		bool IgnoreNextLossOfFocus;
+		
+		string HomePath;
 
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
@@ -56,11 +60,14 @@ namespace ParacletusConsole
 			Process = null;
 			Terminating = false;
 			ProcessIOActive = false;
+			IgnoreNextLossOfFocus = true;
 
 			ConfigurationSerialiser = new Nil.Serialiser<Configuration>(Configuration.ConfigurationFile);
 
 			AutoCompletionMatchesForm = new AutoCompletionForm(this);
 			OriginalAutoListBoxHeight = AutoCompletionMatchesForm.AutoCompletionListBox.Height;
+			
+			HomePath = Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
 
 			LoadConfiguration();
 			InitialiseVariableDictionary();
@@ -146,6 +153,7 @@ namespace ParacletusConsole
 		{
 			if (AutoCompletionThread != null)
 			{
+				Console.WriteLine("CloseAutoCompletionForm triggered");
 				if (Thread.CurrentThread == AutoCompletionThread)
 				{
 					AutoCompletionThread = null;
@@ -173,6 +181,7 @@ namespace ParacletusConsole
 
 		void ShowAutoCompletionForm(List<string> autoCompletionStrings)
 		{
+			IgnoreNextLossOfFocus = true;
 			AutoCompletionThread = new Thread(() =>
 			{
 				AutoCompletionMatchesForm.AutoCompletionListBox.Items.AddRange(autoCompletionStrings.ToArray());
@@ -184,13 +193,16 @@ namespace ParacletusConsole
 
 		public void UpdateAutoCompletionFormPosition()
 		{
+			Console.WriteLine("UpdateAutoCompletionFormPosition");
 			if (AutoCompletionThread != null)
 			{
+				Console.WriteLine("UpdateAutoCompletionFormPosition triggered");
 				AutoCompletionMatchesForm.Invoke(
 					(MethodInvoker)delegate
 					{
 						AutoCompletionMatchesForm.Left = MainForm.Left + MainForm.InputBox.Left + 16;
 						AutoCompletionMatchesForm.Top = MainForm.Top + MainForm.InputBox.Top - AutoCompletionMatchesForm.Height;
+						Console.WriteLine("New offset is " + AutoCompletionMatchesForm.Left + ", " + AutoCompletionMatchesForm.Top);
 					}
 				);
 			}
@@ -205,6 +217,7 @@ namespace ParacletusConsole
 			AutoCompletionMatchesForm.Height = AutoCompletionMatchesForm.AutoCompletionListBox.Height;
 			UpdateAutoCompletionFormPosition();
 			AutoCompletionMatchesForm.TopMost = true;
+			AutoCompletionMatchesForm.BringToFront();
 			MainForm.Invoke(
 				(MethodInvoker)delegate
 				{
@@ -216,8 +229,18 @@ namespace ParacletusConsole
 
 		public void OnMainFormLossOfFocus()
 		{
+			Console.WriteLine("OnMainFormLossOfFocus");
+			
+			if(IgnoreNextLossOfFocus)
+			{
+				Console.WriteLine("OnMainFormLossOfFocus IgnoreNextLossOfFocus");
+				IgnoreNextLossOfFocus = false;
+				return;
+			}
+			
 			if (AutoCompletionThread != null)
 			{
+				Console.WriteLine("OnMainFormLossOfFocus triggered");
 				AutoCompletionMatchesForm.Invoke(
 				(MethodInvoker)delegate
 					{
@@ -444,8 +467,6 @@ namespace ParacletusConsole
 		{
 			lock (this)
 			{
-				//CloseAutoCompletionForm();
-
 				if (Process == null)
 					ProcessRegularEnter();
 				else
@@ -509,6 +530,9 @@ namespace ParacletusConsole
 				return (attributes & FileAttributes.Directory) != 0;
 			}
 			catch (FileNotFoundException)
+			{
+			}
+			catch (DirectoryNotFoundException)
 			{
 			}
 			return false;
@@ -644,8 +668,6 @@ namespace ParacletusConsole
 		{
 			lock (this)
 			{
-				//CloseAutoCompletionForm();
-
 				if(KillProcess())
 					PrintError("Process has been terminated");
 			}
@@ -662,18 +684,24 @@ namespace ParacletusConsole
 		List<string> LoadDirectoryContent(string path, bool removePrefix = false)
 		{
 			List<string> output = new List<string>();
-			DirectoryInfo selectedDirectory = new DirectoryInfo(path);
-			DirectoryInfo[] directories = selectedDirectory.GetDirectories();
-			foreach (DirectoryInfo currentDirectory in directories)
+			try
 			{
-				string directoryPath = ProcessDirectoryContentString(Path.Combine(path, currentDirectory.Name), removePrefix);
-				output.Add(directoryPath);
+				DirectoryInfo selectedDirectory = new DirectoryInfo(path);
+				DirectoryInfo[] directories = selectedDirectory.GetDirectories();
+				foreach (DirectoryInfo currentDirectory in directories)
+				{
+					string directoryPath = ProcessDirectoryContentString(Path.Combine(path, currentDirectory.Name), removePrefix);
+					output.Add(directoryPath);
+				}
+				FileInfo[] files = selectedDirectory.GetFiles();
+				foreach (FileInfo currentFile in files)
+				{
+					string filePath = ProcessDirectoryContentString(Path.Combine(path, currentFile.Name), removePrefix);
+					output.Add(filePath);
+				}
 			}
-			FileInfo[] files = selectedDirectory.GetFiles();
-			foreach (FileInfo currentFile in files)
+			catch(DirectoryNotFoundException)
 			{
-				string filePath = ProcessDirectoryContentString(Path.Combine(path, currentFile.Name), removePrefix);
-				output.Add(filePath);
 			}
 			return output;
 		}
