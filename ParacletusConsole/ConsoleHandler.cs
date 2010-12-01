@@ -47,6 +47,8 @@ namespace ParacletusConsole
 		Thread AutoCompletionThread;
 		AutoCompletionForm AutoCompletionMatchesForm;
 
+		int OriginalAutoListBoxHeight;
+
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
 			consoleForm.FormConsoleHandler = this;
@@ -58,6 +60,7 @@ namespace ParacletusConsole
 			ConfigurationSerialiser = new Nil.Serialiser<Configuration>(Configuration.ConfigurationFile);
 
 			AutoCompletionMatchesForm = new AutoCompletionForm(this);
+			OriginalAutoListBoxHeight = AutoCompletionMatchesForm.AutoCompletionListBox.Height;
 
 			LoadConfiguration();
 			InitialiseVariableDictionary();
@@ -195,6 +198,11 @@ namespace ParacletusConsole
 
 		public void OnAutoCompletionFormLoad()
 		{
+			int itemCount = AutoCompletionMatchesForm.AutoCompletionListBox.Items.Count;
+			const int maximumCount = 10;
+			if (itemCount < maximumCount)
+				AutoCompletionMatchesForm.AutoCompletionListBox.Height = OriginalAutoListBoxHeight - (maximumCount - itemCount + 1) * AutoCompletionMatchesForm.AutoCompletionListBox.ItemHeight;
+			AutoCompletionMatchesForm.Height = AutoCompletionMatchesForm.AutoCompletionListBox.Height;
 			UpdateAutoCompletionFormPosition();
 			AutoCompletionMatchesForm.TopMost = true;
 			MainForm.Invoke(
@@ -912,7 +920,7 @@ namespace ParacletusConsole
 
 		public void KeyPressed(KeyPressEventArgs keyEvent)
 		{
-			//CloseAutoCompletionForm();
+			CloseAutoCompletionForm();
 			if (KeyPressHandlerDictionary.ContainsKey(keyEvent.KeyChar))
 			{
 				keyEvent.Handled = true;

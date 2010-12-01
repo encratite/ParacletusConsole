@@ -1,10 +1,10 @@
 To do:
 
-The auto completion list should be auto height and width adjusted up to a certain maximum
 When one is tabbing, the auto completion does not replace the rest of the path in the previous directories, this can lead to some nasty strings and even broken concatenations
 
 Done:
 
+The auto completion list should be auto height and width adjusted up to a certain maximum
 Double clicks on the auto completion list should perform replacements
 There is still some exception oddity: A first chance exception of type 'System.InvalidOperationException' occurred in System.Windows.Forms.dll
 	(This was a result of some missing checks on position updates etc)
