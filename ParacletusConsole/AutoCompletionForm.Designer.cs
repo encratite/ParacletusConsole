@@ -39,6 +39,7 @@
 			this.AutoCompletionListBox.ForeColor = System.Drawing.Color.White;
 			this.AutoCompletionListBox.FormattingEnabled = true;
 			this.AutoCompletionListBox.Name = "AutoCompletionListBox";
+			this.AutoCompletionListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.AutoCompletionListBox_MouseDoubleClick);
 			// 
 			// AutoCompletionForm
 			// 

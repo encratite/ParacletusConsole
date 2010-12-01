@@ -23,5 +23,14 @@ namespace ParacletusConsole
 		{
 			Handler.OnAutoCompletionFormLoad();
 		}
+
+		private void AutoCompletionListBox_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+			if (AutoCompletionListBox.SelectedItem != null)
+			{
+				string item = AutoCompletionListBox.SelectedItem.ToString();
+				Handler.OnListBoxDoubleClick(item);
+			}
+		}
 	}
 }

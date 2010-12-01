@@ -47,8 +47,6 @@ namespace ParacletusConsole
 		Thread AutoCompletionThread;
 		AutoCompletionForm AutoCompletionMatchesForm;
 
-		bool IgnoreLossOfFocus;
-
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
 			consoleForm.FormConsoleHandler = this;
@@ -56,7 +54,6 @@ namespace ParacletusConsole
 			Process = null;
 			Terminating = false;
 			ProcessIOActive = false;
-			IgnoreLossOfFocus = false;
 
 			ConfigurationSerialiser = new Nil.Serialiser<Configuration>(Configuration.ConfigurationFile);
 
@@ -166,7 +163,6 @@ namespace ParacletusConsole
 				AutoCompletionMatchesForm.ShowDialog();
 			}
 			);
-			IgnoreLossOfFocus = true;
 			AutoCompletionThread.Start();
 		}
 
@@ -183,7 +179,6 @@ namespace ParacletusConsole
 
 		public void OnAutoCompletionFormLoad()
 		{
-			IgnoreLossOfFocus = false;
 			UpdateAutoCompletionFormPosition();
 			AutoCompletionMatchesForm.TopMost = true;
 			MainForm.Invoke(
@@ -195,10 +190,62 @@ namespace ParacletusConsole
 			);
 		}
 
+		void CompletionFocusedTest()
+		{
+			while (true)
+			{
+				AutoCompletionMatchesForm.Invoke(
+					(MethodInvoker)delegate
+					{
+						Console.WriteLine(AutoCompletionMatchesForm.AutoCompletionListBox.Focused.ToString());
+					}
+				);
+				Thread.Sleep(1000);
+			}
+		}
+
 		public void OnMainFormLossOfFocus()
 		{
-			if (!IgnoreLossOfFocus)
-				CloseAutoCompletionForm();
+			AutoCompletionMatchesForm.Invoke(
+			(MethodInvoker)delegate
+				{
+					//if(!AutoCompletionMatchesForm.Focused)
+					//CloseAutoCompletionForm();
+				}
+			);
+		}
+
+		public void OnListBoxDoubleClick(string entry)
+		{
+			MainForm.InputBox.Invoke(
+				(MethodInvoker)delegate
+				{
+					ProcessListBoxDoubleClick(entry);
+				}
+			);
+		}
+
+		void ProcessListBoxDoubleClick(string entry)
+		{
+			lock (this)
+			{
+				string line = MainForm.InputBox.Text;
+				int offset = MainForm.InputBox.SelectionStart;
+				CommandArguments arguments;
+				ArgumentResult activeArgument;
+				try
+				{
+					arguments = new CommandArguments(line);
+					activeArgument = arguments.FindMatchingResult(offset);
+					PerformInputBoxReplacement(line, entry, activeArgument);
+					CloseAutoCompletionForm();
+				}
+				catch (ArgumentException)
+				{
+					Beep();
+					return;
+				}
+			}
 		}
 
 		void AddCommand(string command, string argumentDescription, string description, CommandHandlerFunction function, int argumentCount)
@@ -384,7 +431,7 @@ namespace ParacletusConsole
 		{
 			lock (this)
 			{
-				CloseAutoCompletionForm();
+				//CloseAutoCompletionForm();
 
 				if (Process == null)
 					ProcessRegularEnter();
@@ -584,7 +631,12 @@ namespace ParacletusConsole
 		{
 			lock (this)
 			{
-				CloseAutoCompletionForm();
+				new Thread(() =>
+					{
+						CompletionFocusedTest();
+					}
+				).Start();
+				//CloseAutoCompletionForm();
 
 				if(KillProcess())
 					PrintError("Process has been terminated");
@@ -814,19 +866,24 @@ namespace ParacletusConsole
 					return;
 				}
 
-				//extend the argument accordingly
-				ArgumentResult modifiedArgument = new ArgumentResult(longestCommonSubstring);
-				string replacement = modifiedArgument.EscapeArgument();
-				string left = line.Substring(0, activeArgument.Offset);
-				int rightOffset = activeArgument.Offset + activeArgument.Length();
-				string right = line.Substring(rightOffset);
-				string newLine = left + replacement + right;
-				int newCursorOffset = activeArgument.Offset + replacement.Length;
-
-				//need to fix the cursor position, it should be at the end of the current argument
-				MainForm.InputBox.Text = newLine;
-				MainForm.InputBox.SelectionStart = newCursorOffset;
+				PerformInputBoxReplacement(line, longestCommonSubstring, activeArgument);
 			}
+		}
+
+		void PerformInputBoxReplacement(string line, string replacement, ArgumentResult activeArgument)
+		{
+			//extend the argument accordingly
+			ArgumentResult modifiedArgument = new ArgumentResult(replacement);
+			string middle = modifiedArgument.EscapeArgument();
+			string left = line.Substring(0, activeArgument.Offset);
+			int rightOffset = activeArgument.Offset + activeArgument.Length();
+			string right = line.Substring(rightOffset);
+			string newLine = left + middle + right;
+			int newCursorOffset = activeArgument.Offset + replacement.Length;
+
+			//need to fix the cursor position, it should be at the end of the current argument
+			MainForm.InputBox.Text = newLine;
+			MainForm.InputBox.SelectionStart = newCursorOffset;
 		}
 
 		bool PerformCommonSubstringCheck(List<string> input, string sourceString, int offset)
@@ -877,6 +934,7 @@ namespace ParacletusConsole
 
 		public void KeyPressed(KeyPressEventArgs keyEvent)
 		{
+			//CloseAutoCompletionForm();
 			if (KeyPressHandlerDictionary.ContainsKey(keyEvent.KeyChar))
 			{
 				keyEvent.Handled = true;
