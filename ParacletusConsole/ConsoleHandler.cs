@@ -47,6 +47,8 @@ namespace ParacletusConsole
 		Thread AutoCompletionThread;
 		AutoCompletionForm AutoCompletionMatchesForm;
 
+		bool IgnoreLossOfFocus;
+
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
 			consoleForm.FormConsoleHandler = this;
@@ -54,6 +56,7 @@ namespace ParacletusConsole
 			Process = null;
 			Terminating = false;
 			ProcessIOActive = false;
+			IgnoreLossOfFocus = true;
 
 			ConfigurationSerialiser = new Nil.Serialiser<Configuration>(Configuration.ConfigurationFile);
 
@@ -152,6 +155,7 @@ namespace ParacletusConsole
 				);
 				AutoCompletionThread.Join();
 				AutoCompletionThread = null;
+				IgnoreLossOfFocus = true;
 			}
 		}
 
@@ -164,6 +168,7 @@ namespace ParacletusConsole
 			}
 			);
 			AutoCompletionThread.Start();
+			IgnoreLossOfFocus = false;
 		}
 
 		public void UpdateAutoCompletionFormPosition()
@@ -190,29 +195,18 @@ namespace ParacletusConsole
 			);
 		}
 
-		void CompletionFocusedTest()
-		{
-			while (true)
-			{
-				AutoCompletionMatchesForm.Invoke(
-					(MethodInvoker)delegate
-					{
-						Console.WriteLine(AutoCompletionMatchesForm.AutoCompletionListBox.Focused.ToString());
-					}
-				);
-				Thread.Sleep(1000);
-			}
-		}
-
 		public void OnMainFormLossOfFocus()
 		{
-			AutoCompletionMatchesForm.Invoke(
-			(MethodInvoker)delegate
-				{
-					//if(!AutoCompletionMatchesForm.Focused)
-					//CloseAutoCompletionForm();
-				}
-			);
+			if (!IgnoreLossOfFocus)
+			{
+				AutoCompletionMatchesForm.Invoke(
+				(MethodInvoker)delegate
+					{
+						if (!AutoCompletionMatchesForm.AutoCompletionListBox.Focused)
+							CloseAutoCompletionForm();
+					}
+				);
+			}
 		}
 
 		public void OnListBoxDoubleClick(string entry)
@@ -631,11 +625,6 @@ namespace ParacletusConsole
 		{
 			lock (this)
 			{
-				new Thread(() =>
-					{
-						CompletionFocusedTest();
-					}
-				).Start();
 				//CloseAutoCompletionForm();
 
 				if(KillProcess())
