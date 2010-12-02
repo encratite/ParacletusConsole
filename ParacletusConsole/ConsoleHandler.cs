@@ -153,7 +153,6 @@ namespace ParacletusConsole
 		{
 			if (AutoCompletionThread != null)
 			{
-				Console.WriteLine("CloseAutoCompletionForm triggered");
 				if (Thread.CurrentThread == AutoCompletionThread)
 				{
 					AutoCompletionThread = null;
@@ -193,16 +192,13 @@ namespace ParacletusConsole
 
 		public void UpdateAutoCompletionFormPosition()
 		{
-			Console.WriteLine("UpdateAutoCompletionFormPosition");
 			if (AutoCompletionThread != null)
 			{
-				Console.WriteLine("UpdateAutoCompletionFormPosition triggered");
 				AutoCompletionMatchesForm.Invoke(
 					(MethodInvoker)delegate
 					{
 						AutoCompletionMatchesForm.Left = MainForm.Left + MainForm.InputBox.Left + 16;
 						AutoCompletionMatchesForm.Top = MainForm.Top + MainForm.InputBox.Top - AutoCompletionMatchesForm.Height;
-						Console.WriteLine("New offset is " + AutoCompletionMatchesForm.Left + ", " + AutoCompletionMatchesForm.Top);
 					}
 				);
 			}
@@ -229,18 +225,14 @@ namespace ParacletusConsole
 
 		public void OnMainFormLossOfFocus()
 		{
-			Console.WriteLine("OnMainFormLossOfFocus");
-			
 			if(IgnoreNextLossOfFocus)
 			{
-				Console.WriteLine("OnMainFormLossOfFocus IgnoreNextLossOfFocus");
 				IgnoreNextLossOfFocus = false;
 				return;
 			}
 			
 			if (AutoCompletionThread != null)
 			{
-				Console.WriteLine("OnMainFormLossOfFocus triggered");
 				AutoCompletionMatchesForm.Invoke(
 				(MethodInvoker)delegate
 					{
