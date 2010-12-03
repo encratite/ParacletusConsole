@@ -7,6 +7,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Media;
 using System.Reflection;
+using System.Resources;
 
 namespace ParacletusConsole
 {
@@ -90,7 +91,7 @@ namespace ParacletusConsole
 			VariableDictionary["CurrentWorkingDirectoryWithoutPath"] = folder;
 		}
 
-		void AddCommand(string command, string argumentDescription, string description, CommandHandlerFunction function, int argumentCount)
+		public void AddCommand(string command, string argumentDescription, string description, CommandHandlerFunction function, int argumentCount)
 		{
 			CommandHandler handler = new CommandHandler(command, argumentDescription, description, function, argumentCount);
 			CommandHandlerDictionary.Add(command, handler);

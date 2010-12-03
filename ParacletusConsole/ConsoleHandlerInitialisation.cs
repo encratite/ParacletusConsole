@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Reflection;
 
 namespace ParacletusConsole
 {
@@ -10,7 +11,6 @@ namespace ParacletusConsole
 		void InitialiseCommands()
 		{
 			CommandHandlerDictionary = new Dictionary<string, CommandHandler>();
-			AddCommand("cd", "<directory>", "change the working directory", this.ChangeDirectory, 1);
 		}
 
 		void InitialiseKeyPressHandlerDictionary()
@@ -35,6 +35,18 @@ namespace ParacletusConsole
 		{
 			ScriptingObject = new EmbeddedScripting();
 			string scriptPath = Path.Combine(ProgramDirectory, Configuration.DefaultScriptFile);
+
+			if (!File.Exists(scriptPath))
+			{
+				//copy the embedded default script to the default location
+				StreamReader reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("ParacletusConsole.DefaultScript.cs"));
+				string data = reader.ReadToEnd();
+				reader.Close();
+				StreamWriter writer = new StreamWriter(scriptPath);
+				writer.Write(data);
+				writer.Close();
+			}
+
 			LoadScript(scriptPath);
 		}
 	}
