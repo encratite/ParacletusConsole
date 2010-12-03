@@ -20,7 +20,7 @@ namespace ParacletusConsole
 			Parameters.ReferencedAssemblies.Add(Assembly.GetExecutingAssembly().Location);
 		}
 
-		CompilerResults Compile(string code)
+		public CompilerResults Compile(string code)
 		{
 			return CodeProvider.CompileAssemblyFromSource(Parameters, code);
 		}

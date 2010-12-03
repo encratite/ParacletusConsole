@@ -12,6 +12,7 @@ namespace ParacletusConsole
 		{
 			if (GotConfiguration)
 				ProgramConfiguration.FormState.Apply(MainForm);
+			InitialiseEmbeddedScripting();
 			PrintPrompt();
 			MainForm.InputBox.Focus();
 		}

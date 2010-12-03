@@ -50,6 +50,9 @@ namespace ParacletusConsole
 		bool IgnoreNextLossOfFocus;
 		
 		string HomePath;
+		string ProgramDirectory;
+
+		EmbeddedScripting ScriptingObject;
 		
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
@@ -60,8 +63,8 @@ namespace ParacletusConsole
 			ProcessIOActive = false;
 			IgnoreNextLossOfFocus = true;
 
-			string programPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			string configurationPath = Path.Combine(programPath, Configuration.ConfigurationFile);
+			ProgramDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			string configurationPath = Path.Combine(ProgramDirectory, Configuration.ConfigurationFile);
 
 			ConfigurationSerialiser = new Nil.Serialiser<Configuration>(configurationPath);
 
@@ -73,7 +76,6 @@ namespace ParacletusConsole
 			LoadConfiguration();
 			InitialiseVariableDictionary();
 			InitialiseKeyPressHandlerDictionary();
-
 			IsWindows = IsWindowsOS();
 			PathNames = LoadPathNames();
 			InitialiseCommands();

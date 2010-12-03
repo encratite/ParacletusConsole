@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
 
 namespace ParacletusConsole
@@ -29,6 +29,13 @@ namespace ParacletusConsole
 			VariableDictionary = new Dictionary<string, string>();
 			VariableDictionary.Add("User", Environment.UserName);
 			VariableDictionary.Add("MachineName", machineName);
+		}
+
+		void InitialiseEmbeddedScripting()
+		{
+			ScriptingObject = new EmbeddedScripting();
+			string scriptPath = Path.Combine(ProgramDirectory, Configuration.DefaultScriptFile);
+			LoadScript(scriptPath);
 		}
 	}
 }

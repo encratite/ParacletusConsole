@@ -8,6 +8,7 @@ namespace ParacletusConsole
 	public class Configuration
 	{
 		public static string ConfigurationFile = "Paracletus.xml";
+		public static string DefaultScriptFile = "Paracletus.cs";
 
 		public string Prompt;
 
@@ -17,6 +18,7 @@ namespace ParacletusConsole
 			CommandTextOutputHighlightColour,
 			DefaultOutputColour,
 			ErrorColour,
+			WarningColour,
 			BackgroundColour,
 			InputFieldBackgroundColour;
 
@@ -38,6 +40,7 @@ namespace ParacletusConsole
 			CommandTextOutputHighlightColour = new SerialisableColour(255, 116, 48);
 			DefaultOutputColour = white;
 			ErrorColour = new SerialisableColour(255, 0, 0);
+			WarningColour = new SerialisableColour(0, 255, 255);
 			BackgroundColour = new SerialisableColour(0, 0, 0);
 			InputFieldBackgroundColour = new SerialisableColour(64, 64, 64);
 

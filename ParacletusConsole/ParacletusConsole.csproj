@@ -76,6 +76,9 @@
     <Compile Include="ConsoleHandlerListBox.cs" />
     <Compile Include="ConsoleHandlerMainForm.cs" />
     <Compile Include="ConsoleHandlerPrinting.cs" />
+    <Compile Include="ConsoleHandlerScripting.cs" />
+    <Compile Include="EmbeddedScripting.cs" />
+    <Compile Include="IConsoleScript.cs" />
     <Compile Include="ParacletusForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -39,11 +39,21 @@ namespace ParacletusConsole
 			Print(line + "\n");
 		}
 
-		void PrintError(string line)
+		void PrintInColour(string line, Color colour)
 		{
-			SetOutputColour(ProgramConfiguration.ErrorColour.ToColour());
+			SetOutputColour(colour);
 			PrintLine(line);
 			SetOutputColour(ProgramConfiguration.DefaultOutputColour.ToColour());
+		}
+
+		void PrintWarning(string warningLine)
+		{
+			PrintInColour(warningLine, ProgramConfiguration.WarningColour.ToColour());
+		}
+
+		void PrintError(string errorLine)
+		{
+			PrintInColour(errorLine, ProgramConfiguration.ErrorColour.ToColour());
 		}
 
 		void FormattedPrinting(string input, bool useVariables = true, bool useColours = true)

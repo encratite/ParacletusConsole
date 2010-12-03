@@ -8,7 +8,7 @@ namespace ParacletusConsole
 {
 	public partial class ConsoleHandler
 	{
-		void ChangeDirectory(string[] arguments)
+		public void ChangeDirectory(string[] arguments)
 		{
 			try
 			{
