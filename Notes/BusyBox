@@ -1,0 +1,40 @@
+The program should definitely implement some of the programs provided by BusyBox in a similar but far simpler fashion.
+
+cat -> print
+	Prints a plain text file to the console.
+
+chmod -> ?
+	There's not much of an equivalent for this on Windows since it doesn't use POSIX style permission flags.
+
+cp -> cp
+	To copy files and even directories. Will copy recursively by default.
+
+echo -> echo
+	Print formatted text, supports the regular colour codes and variables.
+
+grep -> ?
+	Now this is an interesting one. Might be easier to implement this as a prefix command for now... perhaps as 'filter'. Piping is not supported right now that's somewhat of a downer.
+
+kill -> kill
+	Terminate a process, supports both filenames and PIDs.
+
+ls -> ls
+	Lists the contents of a directory.
+
+mkdir -> mkdir
+	Create a directory.
+
+mv -> mv
+	Move files, works across devices, too.
+
+ps -> ps
+	A simpler version of tasklist, perhaps.
+
+pwd -> pwd
+	Not necessary since the cwd is already part of the commandline by default really but some users might wish to use the reduced prompt so it should still be provided.
+
+rm -> rm
+	Removes files and directories recursively.
+
+uname -> osinfo
+	Since uname originally stood for UNIX name it would be irritating to give this command the same name on Windows. Should be able to print the OS name, its version and architecture it runs on. Let's throw in info on the memory and possibly HDDs, too.
