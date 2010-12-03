@@ -22,7 +22,7 @@ namespace ParacletusConsole
 		[DllImport("user32.dll")]
 		public static extern IntPtr SendMessage(IntPtr window, int message, int wparam, int lparam);
 
-		void Print(string text)
+		public void Print(string text)
 		{
 			MainForm.ConsoleBox.Invoke
 			(
@@ -34,29 +34,29 @@ namespace ParacletusConsole
 			);
 		}
 
-		void PrintLine(string line)
+		public void PrintLine(string line)
 		{
 			Print(line + "\n");
 		}
 
-		void PrintInColour(string line, Color colour)
+		public void PrintInColour(string line, Color colour)
 		{
 			SetOutputColour(colour);
 			PrintLine(line);
 			SetOutputColour(ProgramConfiguration.DefaultOutputColour.ToColour());
 		}
 
-		void PrintWarning(string warningLine)
+		public void PrintWarning(string warningLine)
 		{
 			PrintInColour(warningLine, ProgramConfiguration.WarningColour.ToColour());
 		}
 
-		void PrintError(string errorLine)
+		public void PrintError(string errorLine)
 		{
 			PrintInColour(errorLine, ProgramConfiguration.ErrorColour.ToColour());
 		}
 
-		void FormattedPrinting(string input, bool useVariables = true, bool useColours = true)
+		public void FormattedPrinting(string input, bool useVariables = true, bool useColours = true)
 		{
 			string currentOutput = "";
 
@@ -124,7 +124,7 @@ namespace ParacletusConsole
 			Print(currentOutput);
 		}
 
-		void PrintCommandString(string line)
+		public void PrintCommandString(string line)
 		{
 			int spaceOffset = line.IndexOf(' ');
 			if (spaceOffset == -1)

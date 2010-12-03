@@ -56,7 +56,7 @@ namespace ParacletusConsole
 				PrintError("Unable to load script " + scriptPath);
 				return false;
 			}
-			return true;
+			return ProcessScriptAssembly(results);
 		}
 
 		bool ProcessScriptAssembly(CompilerResults results)
@@ -69,14 +69,15 @@ namespace ParacletusConsole
 					foreach (Type currentInterface in type.GetInterfaces())
 					{
 						if (currentInterface == typeof(IConsoleScript))
-							ConstructAndExecuteScriptInterface(currentInterface);
+							ConstructAndExecuteScriptInterface(type);
 					}
 				}
 
 			}
 			catch (Exception exception)
 			{
-				PrintError("An exception occured in " + results.PathToAssembly + ": " + exception.Message);
+				PrintError("An exception occured:");
+				PrintError(exception.ToString());
 				return false;
 			}
 			return true;
@@ -85,6 +86,8 @@ namespace ParacletusConsole
 		void ConstructAndExecuteScriptInterface(Type currentInterface)
 		{
 			ConstructorInfo constructor = currentInterface.GetConstructor(System.Type.EmptyTypes);
+			if (constructor == null)
+				throw new ArgumentException("Encountered a null constructor");
 			if (!constructor.IsPublic)
 				throw new ArgumentException("The constructor of a scripting interface must be public");
 			IConsoleScript scriptObject = constructor.Invoke(null) as IConsoleScript;

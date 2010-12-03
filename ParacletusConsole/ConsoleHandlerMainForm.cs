@@ -28,11 +28,11 @@ namespace ParacletusConsole
 			if (AutoCompletionThread != null)
 			{
 				AutoCompletionMatchesForm.Invoke(
-				(MethodInvoker)delegate
-				{
-					if (!(AutoCompletionMatchesForm.Focused || AutoCompletionMatchesForm.AutoCompletionListBox.Focused))
-						CloseAutoCompletionForm();
-				}
+					(MethodInvoker)delegate
+					{
+						if (!(AutoCompletionMatchesForm.Focused || AutoCompletionMatchesForm.AutoCompletionListBox.Focused))
+							CloseAutoCompletionForm();
+					}
 				);
 			}
 		}
