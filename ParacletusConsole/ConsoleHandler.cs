@@ -91,7 +91,7 @@ namespace ParacletusConsole
 			VariableDictionary["CurrentWorkingDirectoryWithoutPath"] = folder;
 		}
 
-		public void AddCommand(string command, string argumentDescription, string description, CommandHandlerFunction function, int argumentCount)
+		public void AddCommand(string command, string argumentDescription, string description, CommandHandlerFunction function, int argumentCount = 0)
 		{
 			CommandHandler handler = new CommandHandler(command, argumentDescription, description, function, argumentCount);
 			CommandHandlerDictionary.Add(command, handler);

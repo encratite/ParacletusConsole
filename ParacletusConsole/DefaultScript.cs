@@ -5,6 +5,8 @@ namespace ParacletusConsole
 		public void Execute(ConsoleHandler consoleHandler)
 		{
 			consoleHandler.AddCommand("cd", "<directory>", "change the working directory", consoleHandler.ChangeDirectory, 1);
+			consoleHandler.AddCommand("help", null, "prints the help menu", consoleHandler.PrintHelp);
+			consoleHandler.AddCommand("clear", null, "clears the console", consoleHandler.ClearConsole);
 		}
 	}
 }

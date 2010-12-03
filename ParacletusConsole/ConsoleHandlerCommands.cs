@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,24 @@ namespace ParacletusConsole
 			{
 				PrintError(exception.Message);
 			}
+		}
+
+		public void PrintHelp(string[] arguments)
+		{
+			PrintLineWithColour("Help menu:", ProgramConfiguration.TitleColour);
+			foreach (CommandHandler handler in CommandHandlerDictionary.Values)
+			{
+				PrintWithColour(handler.Command, ProgramConfiguration.HighlightColour);
+				string argumentDescriptionString = "";
+				if (handler.ArgumentDescription != null)
+					argumentDescriptionString = " " + handler.ArgumentDescription;
+				PrintLine(argumentDescriptionString + " - " + handler.Description);
+			}
+		}
+
+		public void ClearConsole(string[] arguments)
+		{
+			MainForm.ConsoleBox.Text = "";
 		}
 	}
 }

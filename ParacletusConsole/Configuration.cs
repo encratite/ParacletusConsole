@@ -16,11 +16,15 @@ namespace ParacletusConsole
 			CommandTextInputColour,
 			CommandTextOutputColour,
 			CommandTextOutputHighlightColour,
+
 			DefaultOutputColour,
 			ErrorColour,
 			WarningColour,
 			BackgroundColour,
-			InputFieldBackgroundColour;
+			InputFieldBackgroundColour,
+
+			TitleColour,
+			HighlightColour;
 
 		public string Font;
 		public float FontSize;
@@ -38,11 +42,15 @@ namespace ParacletusConsole
 			CommandTextInputColour = white;
 			CommandTextOutputColour = new SerialisableColour(213, 228, 191);
 			CommandTextOutputHighlightColour = new SerialisableColour(255, 116, 48);
+
 			DefaultOutputColour = white;
 			ErrorColour = new SerialisableColour(255, 0, 0);
 			WarningColour = new SerialisableColour(0, 255, 255);
 			BackgroundColour = new SerialisableColour(0, 0, 0);
 			InputFieldBackgroundColour = new SerialisableColour(64, 64, 64);
+
+			TitleColour = new SerialisableColour(85, 255, 161);
+			HighlightColour = new SerialisableColour(197, 128, 255);
 
 			Font = "Lucida Console";
 			FontSize = 8.0f;

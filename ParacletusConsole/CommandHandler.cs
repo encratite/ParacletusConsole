@@ -24,7 +24,10 @@ namespace ParacletusConsole
 
 		public string Usage()
 		{
-			return Command + " " + ArgumentDescription + " - " + Description;
+			string argumentDescriptionString = "";
+			if (ArgumentDescription != null)
+				argumentDescriptionString = " " + ArgumentDescription;
+			return Command + argumentDescriptionString + " - " + Description;
 		}
 	}
 }
