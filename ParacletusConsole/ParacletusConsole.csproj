@@ -65,6 +65,17 @@
     <Compile Include="AutoCompletionForm.Designer.cs">
       <DependentUpon>AutoCompletionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ConsoleHandlerAutoCompletion.cs" />
+    <Compile Include="ConsoleHandlerAutoCompletionForm.cs" />
+    <Compile Include="ConsoleHandlerColour.cs" />
+    <Compile Include="ConsoleHandlerCommands.cs" />
+    <Compile Include="ConsoleHandlerConfiguration.cs" />
+    <Compile Include="ConsoleHandlerDirectory.cs" />
+    <Compile Include="ConsoleHandlerEnter.cs" />
+    <Compile Include="ConsoleHandlerInitialisation.cs" />
+    <Compile Include="ConsoleHandlerListBox.cs" />
+    <Compile Include="ConsoleHandlerMainForm.cs" />
+    <Compile Include="ConsoleHandlerPrinting.cs" />
     <Compile Include="ParacletusForm.cs">
       <SubType>Form</SubType>
     </Compile>
