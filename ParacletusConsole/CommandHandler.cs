@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace ParacletusConsole
 {
-	public class CommandHandler
+	public class CommandHandler: IComparable<CommandHandler>
 	{
 		public string Command;
 		public string Description;
@@ -28,6 +29,11 @@ namespace ParacletusConsole
 			if (ArgumentDescription != null)
 				argumentDescriptionString = " " + ArgumentDescription;
 			return Command + argumentDescriptionString + " - " + Description;
+		}
+
+		public int CompareTo(CommandHandler other)
+		{
+			return Command.CompareTo(other.Command);
 		}
 	}
 }

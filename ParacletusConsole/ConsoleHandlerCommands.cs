@@ -23,10 +23,12 @@ namespace ParacletusConsole
 
 		public void PrintHelp(string[] arguments)
 		{
-			PrintLineWithColour("Help menu:", ProgramConfiguration.TitleColour);
-			foreach (CommandHandler handler in CommandHandlerDictionary.Values)
+			CommandHandler[] handlers = CommandHandlerDictionary.Values.ToArray();
+			Array.Sort(handlers);
+			PrintLineWithColour("Help menu:\n", ProgramConfiguration.TitleColour);
+			foreach (CommandHandler handler in handlers)
 			{
-				PrintWithColour(handler.Command, ProgramConfiguration.HighlightColour);
+				PrintWithColour("  " + handler.Command, ProgramConfiguration.HighlightColour);
 				string argumentDescriptionString = "";
 				if (handler.ArgumentDescription != null)
 					argumentDescriptionString = " " + handler.ArgumentDescription;
