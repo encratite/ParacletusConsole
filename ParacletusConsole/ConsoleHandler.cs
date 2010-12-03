@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using System.Media;
+using System.Reflection;
 
 namespace ParacletusConsole
 {
@@ -52,7 +53,7 @@ namespace ParacletusConsole
 		bool IgnoreNextLossOfFocus;
 		
 		string HomePath;
-
+		
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
 			consoleForm.FormConsoleHandler = this;
@@ -62,7 +63,10 @@ namespace ParacletusConsole
 			ProcessIOActive = false;
 			IgnoreNextLossOfFocus = true;
 
-			ConfigurationSerialiser = new Nil.Serialiser<Configuration>(Configuration.ConfigurationFile);
+			string programPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			string configurationPath = Path.Combine(programPath, Configuration.ConfigurationFile);
+
+			ConfigurationSerialiser = new Nil.Serialiser<Configuration>(configurationPath);
 
 			AutoCompletionMatchesForm = new AutoCompletionForm(this);
 			OriginalAutoListBoxHeight = AutoCompletionMatchesForm.AutoCompletionListBox.Height;

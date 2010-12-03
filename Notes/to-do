@@ -1,6 +1,5 @@
 To do:
 
-The XML configuration file path must be initialised on launch, so it is an absolute path and doesn't get influenced by the current working directory
 This code does not work well with Mono on Linux anymore, it would be nice to figure out why but it looks like this is a severe bug in its Winforms code - even though Windows is the primary target
 Sometimes the main controls are not resized when the form is maximised, it is unclear to me why this happens
 When one is tabbing, the auto completion does not replace the rest of the path in the previous directories, this can lead to some nasty strings and even broken concatenations
@@ -8,6 +7,7 @@ When one is tabbing, the auto completion does not replace the rest of the path i
 Done:
 
 The auto completion list should be auto height and width adjusted up to a certain maximum
+The XML configuration file path must be initialised on launch, so it is an absolute path and doesn't get influenced by the current working directory
 Double clicks on the auto completion list should perform replacements
 There is still some exception oddity: A first chance exception of type 'System.InvalidOperationException' occurred in System.Windows.Forms.dll
 	(This was a result of some missing checks on position updates etc)
