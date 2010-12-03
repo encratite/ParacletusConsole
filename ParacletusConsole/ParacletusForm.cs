@@ -30,7 +30,7 @@ namespace ParacletusConsole
 
 		private void ConsoleForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			FormConsoleHandler.Closing();
+			FormConsoleHandler.OnTermination();
 		}
 
 		private void ConsoleForm_LocationChanged(object sender, EventArgs e)
