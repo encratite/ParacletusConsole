@@ -10,6 +10,7 @@ namespace ParacletusConsole
 			consoleHandler.AddCommand("print", "<path to file>", "prints a file to the console", consoleHandler.PrintFile, 1);
 			consoleHandler.AddCommand("cp", "<source> <destination>", "copy a file or a directory", consoleHandler.CopyFile, 2);
 			consoleHandler.AddCommand("echo", "<strings with colour codes and variables>", "print a formatted string", consoleHandler.Echo, -1);
+			consoleHandler.AddCommand("ps", null, "print a list of running processes", consoleHandler.ProcessList);
 		}
 	}
 }

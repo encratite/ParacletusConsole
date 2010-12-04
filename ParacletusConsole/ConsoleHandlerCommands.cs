@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Diagnostics;
 
 namespace ParacletusConsole
 {
@@ -137,6 +138,31 @@ namespace ParacletusConsole
 			}
 			line += "\n";
 			FormattedPrinting(line);
+		}
+
+		int ProcessComparison(Process x, Process y)
+		{
+			return x.ProcessName.ToLower().CompareTo(y.ProcessName.ToLower());
+		}
+
+		public void ProcessList(string[] arguments)
+		{
+			PrintLineWithColour("Running processes:\n", ProgramConfiguration.TitleColour);
+			Process[] processes = Process.GetProcesses();
+			Array.Sort(processes, ProcessComparison);
+			foreach (Process process in processes)
+			{
+				PrintWithColour(process.ProcessName, ProgramConfiguration.HighlightColour);
+				try
+				{
+					Print(" (ID " + process.Id.ToString());
+					Print(", " + process.MainModule.FileName);
+				}
+				catch (Exception)
+				{
+				}
+				PrintLine(")");
+			}
 		}
 	}
 }
