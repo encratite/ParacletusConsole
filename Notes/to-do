@@ -1,5 +1,7 @@
 To do:
 
+It would be nice if you were able to paste multiple lines into the input box
+A space in front of the command prevents it from getting highlighted
 This code does not work well with Mono on Linux anymore, it would be nice to figure out why but it looks like this is a severe bug in its Winforms code - even though Windows is the primary target
 Sometimes the main controls are not resized when the form is maximised, it is unclear to me why this happens
 When one is tabbing, the auto completion does not replace the rest of the path in the previous directories, this can lead to some nasty strings and even broken concatenations
