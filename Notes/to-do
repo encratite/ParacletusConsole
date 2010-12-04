@@ -1,5 +1,6 @@
 To do:
 
+Add */** syntax
 It would be nice if you were able to paste multiple lines into the input box
 A space in front of the command prevents it from getting highlighted
 This code does not work well with Mono on Linux anymore, it would be nice to figure out why but it looks like this is a severe bug in its Winforms code - even though Windows is the primary target

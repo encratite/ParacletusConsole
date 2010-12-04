@@ -40,5 +40,21 @@ namespace ParacletusConsole
 		{
 			MainForm.ConsoleBox.Text = "";
 		}
+
+		public void PrintFile(string[] arguments)
+		{
+			string path = arguments.First();
+			try
+			{
+				StreamReader reader = new StreamReader(path);
+				string content = reader.ReadToEnd();
+				reader.Close();
+				PrintLine(content);
+			}
+			catch (FileNotFoundException)
+			{
+				PrintError("No such file");
+			}
+		}
 	}
 }
