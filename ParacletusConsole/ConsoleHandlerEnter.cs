@@ -48,7 +48,7 @@ namespace ParacletusConsole
 			if (CommandHandlerDictionary.ContainsKey(arguments.Command.Argument))
 			{
 				CommandHandler handler = CommandHandlerDictionary[arguments.Command.Argument];
-				if (arguments.Arguments.Length != handler.ArgumentCount)
+				if (handler.ArgumentCount != -1 && arguments.Arguments.Length != handler.ArgumentCount)
 				{
 					PrintError("Invalid argument count.");
 					PrintLine(handler.Usage());

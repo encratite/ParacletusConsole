@@ -123,5 +123,20 @@ namespace ParacletusConsole
 			}
 		}
 
+		public void Echo(string[] arguments)
+		{
+			string line = "";
+			bool first = true;
+			foreach (string argument in arguments)
+			{
+				if (first)
+					first = false;
+				else
+					line += " ";
+				line += argument;
+			}
+			line += "\n";
+			FormattedPrinting(line);
+		}
 	}
 }
