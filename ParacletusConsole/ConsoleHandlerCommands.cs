@@ -51,10 +51,77 @@ namespace ParacletusConsole
 				reader.Close();
 				PrintLine(content);
 			}
-			catch (FileNotFoundException)
+			catch (Exception exception)
 			{
-				PrintError("No such file");
+				PrintError(exception.Message);
 			}
 		}
+
+		void CopyDirectory(string source, string destination)
+		{
+			DirectoryInfo sourceDirectory = new DirectoryInfo(source);
+			DirectoryInfo[] subDirectories = sourceDirectory.GetDirectories();
+			foreach(DirectoryInfo directory in subDirectories)
+			{
+				string path = Path.Combine(destination, directory.Name);
+				Directory.CreateDirectory(path);
+				CopyDirectory(directory.FullName, path);
+			}
+			FileInfo[] files = sourceDirectory.GetFiles();
+			foreach (FileInfo file in files)
+			{
+				string path = Path.Combine(destination, file.Name);
+				file.CopyTo(path);
+			}
+		}
+
+		void PrepareDirectoryCopy(string source, string destination)
+		{
+			Nil.File.FileType destinationType = Nil.File.GetFileType(destination);
+			switch (destinationType)
+			{
+				case Nil.File.FileType.File:
+					PrintError("The destination " + destination + " is a file");
+					break;
+
+				case Nil.File.FileType.Directory:
+					CopyDirectory(source, destination);
+					break;
+
+				case Nil.File.FileType.DoesNotExist:
+					Directory.CreateDirectory(destination);
+					CopyDirectory(source, destination);
+					break;
+			}
+		}
+
+		public void CopyFile(string[] arguments)
+		{
+			string source = arguments[0];
+			string destination = arguments[1];
+			try
+			{
+				Nil.File.FileType sourceType = Nil.File.GetFileType(source);
+				switch (sourceType)
+				{
+					case Nil.File.FileType.File:
+						File.Copy(source, destination);
+						break;
+
+					case Nil.File.FileType.Directory:
+						PrepareDirectoryCopy(source, destination);
+						break;
+
+					case Nil.File.FileType.DoesNotExist:
+						PrintError("Source " + source + " does not exist");
+						break;
+				}
+			}
+			catch (Exception exception)
+			{
+				PrintError(exception.Message);
+			}
+		}
+
 	}
 }

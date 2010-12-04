@@ -59,7 +59,7 @@ namespace ParacletusConsole
 						autoCompletionStrings.Add(i);
 				}
 
-				if (IsDirectory(argumentString))
+				if (Nil.File.GetFileType(argumentString) == Nil.File.FileType.Directory)
 				{
 					//the current argument the user is tabbing in refers to a directory
 					List<string> directoryContent = LoadDirectoryContent(argumentString);

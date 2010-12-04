@@ -115,25 +115,9 @@ namespace ParacletusConsole
 			return LoadDirectoryContent(directoryPath, removePrefix);
 		}
 
-		bool IsDirectory(string path)
-		{
-			try
-			{
-				FileAttributes attributes = File.GetAttributes(path);
-				return (attributes & FileAttributes.Directory) != 0;
-			}
-			catch (FileNotFoundException)
-			{
-			}
-			catch (DirectoryNotFoundException)
-			{
-			}
-			return false;
-		}
-
 		bool PerformChangeDirectoryCheck(string path)
 		{
-			if (IsDirectory(path))
+			if (Nil.File.GetFileType(path) == Nil.File.FileType.Directory)
 			{
 				//this is a directory, it cannot be executed, let's just cd instead
 				System.IO.Directory.SetCurrentDirectory(path);
