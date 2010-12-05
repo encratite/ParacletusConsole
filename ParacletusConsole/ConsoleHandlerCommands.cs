@@ -357,5 +357,27 @@ namespace ParacletusConsole
 			foreach (string path in arguments)
 				ProcessRemoveFileCommand(path);
 		}
+
+		public void OperatingSystemInformation(string[] arguments)
+		{
+			string servicePackString = System.Environment.OSVersion.ServicePack;
+			if (servicePackString.Length == 0)
+				servicePackString = "None";
+			string[][] stringRows =
+			{
+				new string[] {"Name", Nil.OperatingSystem.Name()},
+				new string[] {"Architecture", System.Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit"},
+				new string[] {"Version", System.Environment.OSVersion.Version.ToString()},
+				//new string[] {"Platform", System.Environment.OSVersion.Platform.ToString()},
+				new string[] {"Service pack", servicePackString},
+			};
+			List<ColouredString[]> rows = new List<ColouredString[]>();
+			foreach (string[] stringRow in stringRows)
+			{
+				ColouredString[] row = { new ColouredString(stringRow[0] + ":", ProgramConfiguration.HighlightColour), new ColouredString(stringRow[1]) };
+				rows.Add(row);
+			}
+			PrintTable(rows.ToArray());
+		}
 	}
 }
