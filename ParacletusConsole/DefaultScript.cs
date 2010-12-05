@@ -12,6 +12,7 @@ namespace ParacletusConsole
 			consoleHandler.AddCommand("echo", "<strings with colour codes and variables>", "print a formatted string", consoleHandler.Echo, -1);
 			consoleHandler.AddCommand("ps", null, "print a list of running processes", consoleHandler.ProcessList);
 			consoleHandler.AddCommand("kill", "<PID or name of executable>", "terminate a process", consoleHandler.KillProcess, 1);
+			consoleHandler.AddCommand("ls", "<path>", "list the contents of a directory", consoleHandler.ListDirectoryContents, -1);
 		}
 	}
 }

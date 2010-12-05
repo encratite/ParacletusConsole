@@ -150,5 +150,41 @@ namespace ParacletusConsole
 			string data = System.Text.UTF8Encoding.UTF8.GetString(buffer, 0, bytesRead);
 			Print(data);
 		}
+
+		public void PrintTable(ColouredString[][] table)
+		{
+			const int padding = 4;
+			List<int> columnWidths = new List<int>();
+			int columnCount = table.First().Length;
+			for (int columnIndex = 0; columnIndex < columnCount; columnIndex++)
+			{
+				int currentWidth = 0;
+				for (int rowIndex = 0; rowIndex < table.Length; rowIndex++)
+				{
+					ColouredString[] row = table[rowIndex];
+					int width = row[columnIndex].Content.Length;
+					currentWidth = Math.Max(currentWidth, width);
+				}
+				if (columnIndex != columnCount - 1)
+					currentWidth += padding;
+				columnWidths.Add(currentWidth);
+			}
+
+			for (int rowIndex = 0; rowIndex < table.Length; rowIndex++)
+			{
+				for (int columnIndex = 0; columnIndex < columnCount; columnIndex++)
+				{
+					int width = columnWidths[columnIndex];
+					ColouredString field = table[rowIndex][columnIndex];
+					string fieldContent = field.Content;
+					fieldContent += new string(' ', width - fieldContent.Length);
+					if (field.Colour == null)
+						Print(fieldContent);
+					else
+						PrintWithColour(fieldContent, field.Colour);
+				}
+				PrintLine("");
+			}
+		}
 	}
 }

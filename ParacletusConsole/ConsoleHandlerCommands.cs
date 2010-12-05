@@ -220,5 +220,55 @@ namespace ParacletusConsole
 			}
 			PrintError("Unable to find a process with the name " + target);
 		}
+
+		public void ListDirectoryContents(string[] arguments)
+		{
+			string path;
+			if (arguments.Length == 1)
+				path = arguments.First();
+			else
+				path = ".";
+			try
+			{
+				List<ColouredString[]> rows = new List<ColouredString[]>();
+				DirectoryInfo directory = new DirectoryInfo(path);
+				foreach (DirectoryInfo subDirectory in directory.GetDirectories())
+				{
+					List<ColouredString> columns = new List<ColouredString>();
+					ColouredString
+						name = new ColouredString(subDirectory.Name, ProgramConfiguration.ListDirectoryColour),
+						time = new ColouredString(subDirectory.LastWriteTime.ToString()),
+						size = new ColouredString("");
+					columns.Add(name);
+					columns.Add(time);
+					columns.Add(size);
+					rows.Add(columns.ToArray());
+				}
+				foreach (FileInfo file in directory.GetFiles())
+				{
+					const string executableExtension = ".exe";
+					string name = file.Name;
+					SerialisableColour currentColour;
+					if(name.Length >= executableExtension.Length && name.Substring(name.Length - executableExtension.Length) == executableExtension)
+						currentColour = ProgramConfiguration.ListExecutableColour;
+					else
+						currentColour = ProgramConfiguration.ListFileColour;
+					List<ColouredString> columns = new List<ColouredString>();
+					ColouredString
+						nameColumn = new ColouredString(name, currentColour),
+						time = new ColouredString(file.LastWriteTime.ToString()),
+						size = new ColouredString(Nil.String.GetFileSizeString(file.Length));
+					columns.Add(nameColumn);
+					columns.Add(time);
+					columns.Add(size);
+					rows.Add(columns.ToArray());
+				}
+				PrintTable(rows.ToArray());
+			}
+			catch (Exception exception)
+			{
+				PrintError(exception.Message);
+			}
+		}
 	}
 }

@@ -1,5 +1,6 @@
 To do:
 
+Add some arguments to ps and ls and such
 Add */** syntax
 It would be nice if you were able to paste multiple lines into the input box
 A space in front of the command prevents it from getting highlighted

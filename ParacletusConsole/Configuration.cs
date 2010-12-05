@@ -24,7 +24,11 @@ namespace ParacletusConsole
 			InputFieldBackgroundColour,
 
 			TitleColour,
-			HighlightColour;
+			HighlightColour,
+
+			ListDirectoryColour,
+			ListFileColour,
+			ListExecutableColour;
 
 		public string Font;
 		public float FontSize;
@@ -51,6 +55,10 @@ namespace ParacletusConsole
 
 			TitleColour = new SerialisableColour(85, 255, 161);
 			HighlightColour = new SerialisableColour(197, 128, 255);
+
+			ListDirectoryColour = new SerialisableColour(85, 255, 209);
+			ListFileColour = new SerialisableColour(255, 247, 209);
+			ListExecutableColour = new SerialisableColour(255, 100, 231);
 
 			Font = "Lucida Console";
 			FontSize = 8.0f;

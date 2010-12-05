@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="ArgumentResult.cs" />
     <Compile Include="AsynchronousReader.cs" />
+    <Compile Include="ColouredString.cs" />
     <Compile Include="CommandArguments.cs" />
     <Compile Include="CommandHandler.cs" />
     <Compile Include="Configuration.cs" />
