@@ -311,5 +311,10 @@ namespace ParacletusConsole
 				PrintError(exception.Message);
 			}
 		}
+
+		public void PrintWorkingDirectory(string[] arguments)
+		{
+			PrintLine(System.IO.Directory.GetCurrentDirectory());
+		}
 	}
 }

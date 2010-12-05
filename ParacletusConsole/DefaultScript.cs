@@ -15,6 +15,7 @@ namespace ParacletusConsole
 			consoleHandler.AddCommand("ls", "<path>", "list the contents of a directory", consoleHandler.ListDirectoryContents, -1);
 			consoleHandler.AddCommand("mkdir", "<path>", "create a directory", consoleHandler.CreateDirectory, 1);
 			consoleHandler.AddCommand("mv", "<source> <destination>", "move a file/directory", consoleHandler.MoveFile, 2);
+			consoleHandler.AddCommand("pwd", null, "print the working directory", consoleHandler.PrintWorkingDirectory);
 		}
 	}
 }
