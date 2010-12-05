@@ -316,5 +316,46 @@ namespace ParacletusConsole
 		{
 			PrintLine(System.IO.Directory.GetCurrentDirectory());
 		}
+
+		void RemoveDirectory(string path)
+		{
+			DirectoryInfo directory = new DirectoryInfo(path);
+			foreach(FileInfo file in directory.GetFiles())
+				file.Delete();
+			foreach (DirectoryInfo subDirectory in directory.GetDirectories())
+				RemoveDirectory(subDirectory.FullName);
+			directory.Delete();
+		}
+
+		void ProcessRemoveFileCommand(string path)
+		{
+			Nil.File.FileType sourceType = Nil.File.GetFileType(path);
+			switch (sourceType)
+			{
+				case Nil.File.FileType.File:
+					File.Delete(path);
+					break;
+
+				case Nil.File.FileType.Directory:
+					RemoveDirectory(path);
+					break;
+
+				case Nil.File.FileType.DoesNotExist:
+					PrintError("File " + path + " does not exist");
+					break;
+			}
+		}
+
+		public void RemoveFile(string[] arguments)
+		{
+			if (arguments.Length == 0)
+			{
+				PrintError("You have not specified a file to remove.");
+				return;
+			}
+
+			foreach (string path in arguments)
+				ProcessRemoveFileCommand(path);
+		}
 	}
 }

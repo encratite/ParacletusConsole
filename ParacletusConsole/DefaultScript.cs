@@ -16,6 +16,7 @@ namespace ParacletusConsole
 			consoleHandler.AddCommand("mkdir", "<path>", "create a directory", consoleHandler.CreateDirectory, 1);
 			consoleHandler.AddCommand("mv", "<source> <destination>", "move a file/directory", consoleHandler.MoveFile, 2);
 			consoleHandler.AddCommand("pwd", null, "print the working directory", consoleHandler.PrintWorkingDirectory);
+			consoleHandler.AddCommand("rm", "<files/directories to be removed>", "remove files or directories recursively", consoleHandler.RemoveFile, -1);
 		}
 	}
 }
