@@ -37,4 +37,4 @@ rm -> rm
 	Removes files and directories recursively.
 
 uname -> osinfo
-	Since uname originally stood for UNIX name it would be irritating to give this command the same name on Windows. Should be able to print the OS name, its version and architecture it runs on. Let's throw in info on the memory and possibly HDDs, too.
+	Since uname originally stood for UNIX name it would be irritating to give this command the same name on Windows. Should be able to print the OS name, its version and architecture it runs on. Let's throw in info on the CPU, memory and possibly HDDs, too.

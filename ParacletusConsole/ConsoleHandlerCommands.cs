@@ -283,5 +283,33 @@ namespace ParacletusConsole
 				PrintError(exception.Message);
 			}
 		}
+
+		public void MoveFile(string[] arguments)
+		{
+			string source = arguments[0];
+			string destination= arguments[1];
+			try
+			{
+				Nil.File.FileType sourceType = Nil.File.GetFileType(source);
+				switch (sourceType)
+				{
+					case Nil.File.FileType.File:
+						File.Move(source, destination);
+						break;
+
+					case Nil.File.FileType.Directory:
+						Directory.Move(source, destination);
+						break;
+
+					case Nil.File.FileType.DoesNotExist:
+						PrintError("Source " + source + " does not exist");
+						break;
+				}
+			}
+			catch (Exception exception)
+			{
+				PrintError(exception.Message);
+			}
+		}
 	}
 }

@@ -14,6 +14,7 @@ namespace ParacletusConsole
 			consoleHandler.AddCommand("kill", "<PID or name of executable>", "terminate a process", consoleHandler.KillProcess, 1);
 			consoleHandler.AddCommand("ls", "<path>", "list the contents of a directory", consoleHandler.ListDirectoryContents, -1);
 			consoleHandler.AddCommand("mkdir", "<path>", "create a directory", consoleHandler.CreateDirectory, 1);
+			consoleHandler.AddCommand("mv", "<source> <destination>", "move a file/directory", consoleHandler.MoveFile, 2);
 		}
 	}
 }
