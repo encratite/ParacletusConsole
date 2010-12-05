@@ -270,5 +270,18 @@ namespace ParacletusConsole
 				PrintError(exception.Message);
 			}
 		}
+
+		public void CreateDirectory(string[] arguments)
+		{
+			string path = arguments.First();
+			try
+			{
+				Directory.CreateDirectory(path);
+			}
+			catch (Exception exception)
+			{
+				PrintError(exception.Message);
+			}
+		}
 	}
 }
