@@ -11,6 +11,7 @@ namespace ParacletusConsole
 			consoleHandler.AddCommand("cp", "<source> <destination>", "copy a file or a directory", consoleHandler.CopyFile, 2);
 			consoleHandler.AddCommand("echo", "<strings with colour codes and variables>", "print a formatted string", consoleHandler.Echo, -1);
 			consoleHandler.AddCommand("ps", null, "print a list of running processes", consoleHandler.ProcessList);
+			consoleHandler.AddCommand("kill", "<PID or name of executable>", "terminate a process", consoleHandler.KillProcess, 1);
 		}
 	}
 }

@@ -155,7 +155,7 @@ namespace ParacletusConsole
 				PrintWithColour(process.ProcessName, ProgramConfiguration.HighlightColour);
 				try
 				{
-					Print(" (ID " + process.Id.ToString());
+					Print(" (PID " + process.Id.ToString());
 					Print(", " + process.MainModule.FileName);
 				}
 				catch (Exception)
@@ -163,6 +163,62 @@ namespace ParacletusConsole
 				}
 				PrintLine(")");
 			}
+		}
+
+		void TerminateMatchingProcess(Process process)
+		{
+			try
+			{
+				process.Kill();
+				PrintLine("Successfully terminated process " + process.ProcessName + " (PID " + process.Id.ToString() + ")");
+			}
+			catch (Exception exception)
+			{
+				PrintError(exception.Message);
+			}
+		}
+
+		public void KillProcess(string[] arguments)
+		{
+			string target = arguments.First();
+			Process[] processes = Process.GetProcesses();
+			try
+			{
+				int pid = Convert.ToInt32(target);
+				foreach (Process process in processes)
+				{
+					if (process.Id == pid)
+					{
+						TerminateMatchingProcess(process);
+						return;
+					}
+				}
+				PrintError("Unable to find a process with the PID " + pid.ToString());
+				return;
+			}
+			catch (FormatException)
+			{
+			}
+			catch (OverflowException)
+			{
+				PrintError("An overflow exception occured, you specified an invalid PID to kill.");
+				return;
+			}
+			foreach (Process process in processes)
+			{
+				bool doKill = process.ProcessName.ToLower() == target.ToLower();
+				try
+				{
+					string[] tokens = process.MainModule.FileName.Split(Path.DirectorySeparatorChar);
+					doKill |= target.ToLower() == tokens.Last().ToLower();
+				}
+				catch (Exception)
+				{
+				}
+				if (doKill)
+					TerminateMatchingProcess(process);
+			}
+			PrintError("Unable to find a process with the name " + target);
 		}
 	}
 }
