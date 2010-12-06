@@ -53,7 +53,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArgumentResult.cs" />
+    <Compile Include="Alias.cs" />
+    <Compile Include="CommandArgument.cs" />
     <Compile Include="AsynchronousReader.cs" />
     <Compile Include="ColouredString.cs" />
     <Compile Include="CommandArguments.cs" />

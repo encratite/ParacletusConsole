@@ -27,7 +27,7 @@ namespace ParacletusConsole
 					Beep();
 					return;
 				}
-				ArgumentResult activeArgument;
+				CommandArgument activeArgument;
 				try
 				{
 					activeArgument = arguments.FindMatchingResult(offset);
@@ -109,10 +109,10 @@ namespace ParacletusConsole
 			}
 		}
 
-		void PerformInputBoxReplacement(string line, string replacement, ArgumentResult activeArgument)
+		void PerformInputBoxReplacement(string line, string replacement, CommandArgument activeArgument)
 		{
 			//extend the argument accordingly
-			ArgumentResult modifiedArgument = new ArgumentResult(replacement);
+			CommandArgument modifiedArgument = new CommandArgument(replacement);
 			string middle = modifiedArgument.EscapeArgument();
 			string left = line.Substring(0, activeArgument.Offset);
 			int rightOffset = activeArgument.Offset + activeArgument.Length();

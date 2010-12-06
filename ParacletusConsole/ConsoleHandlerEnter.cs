@@ -31,39 +31,7 @@ namespace ParacletusConsole
 				return;
 			}
 
-			CommandArguments arguments;
-
-			try
-			{
-				arguments = new CommandArguments(line);
-				//visualiseArguments(arguments);
-			}
-			catch (ArgumentException exception)
-			{
-				PrintError(exception.Message);
-				PromptAndSelect();
-				return;
-			}
-
-			if (CommandHandlerDictionary.ContainsKey(arguments.Command.Argument))
-			{
-				CommandHandler handler = CommandHandlerDictionary[arguments.Command.Argument];
-				if (handler.ArgumentCount != -1 && arguments.Arguments.Length != handler.ArgumentCount)
-				{
-					PrintError("Invalid argument count.");
-					PrintLine(handler.Usage());
-				}
-				else
-					handler.Function(arguments.GetArgumentString());
-				PromptAndSelect();
-			}
-			else
-			{
-				if (PerformChangeDirectoryCheck(arguments.Command.Argument))
-					return;
-
-				AttemptProcessExecution(arguments);
-			}
+			Execute(line);
 		}
 
 		void ProcessRuntimeEnter()

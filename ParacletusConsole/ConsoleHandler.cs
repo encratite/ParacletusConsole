@@ -54,6 +54,8 @@ namespace ParacletusConsole
 		string ProgramDirectory;
 
 		EmbeddedScripting ScriptingObject;
+
+		List<Alias> Aliases;
 		
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
@@ -80,6 +82,7 @@ namespace ParacletusConsole
 			IsWindows = IsWindowsOS();
 			PathNames = LoadPathNames();
 			InitialiseCommands();
+			Aliases = new List<Alias>();
 		}
 
 		void UpdateWorkingDirectory()
@@ -213,6 +216,74 @@ namespace ParacletusConsole
 				keyEvent.Handled = true;
 				KeyPressHandlerDictionary[keyEvent.KeyChar]();
 			}
+		}
+
+		public void Execute(string line)
+		{
+			line = line.Trim();
+			if (line.Length == 0)
+				return;
+			CommandArguments arguments;
+
+			try
+			{
+				arguments = new CommandArguments(line);
+				//visualiseArguments(arguments);
+			}
+			catch (ArgumentException exception)
+			{
+				PrintError(exception.Message);
+				PromptAndSelect();
+				return;
+			}
+
+			Execute(arguments);
+		}
+
+		public void Execute(CommandArguments arguments)
+		{
+			string command = arguments.Command.Argument;
+
+			if (CommandHandlerDictionary.ContainsKey(command))
+			{
+				CommandHandler handler = CommandHandlerDictionary[command];
+				if (handler.ArgumentCount != -1 && arguments.Arguments.Length != handler.ArgumentCount)
+				{
+					PrintError("Invalid argument count.");
+					PrintLine(handler.Usage());
+				}
+				else
+					handler.Function(arguments.GetArgumentString());
+				PromptAndSelect();
+			}
+			else
+			{
+				Alias alias = Aliases.Find(
+					delegate(Alias x)
+					{
+						return x.Identifier == command;
+					}
+				);
+				string newLine = alias.Command;
+				if (alias == null)
+				{
+					if (PerformChangeDirectoryCheck(arguments.Command.Argument))
+						return;
+
+					AttemptProcessExecution(arguments);
+					return;
+				}
+				else
+				{
+					string aliasLine = alias.Command + " " + arguments.GetQuotedArguments();
+					Execute(aliasLine);
+				}
+			}
+		}
+
+		public void AddAlias(string identifier, string command)
+		{
+			Aliases.Add(new Alias(identifier, command));
 		}
 	}
 }

@@ -6,13 +6,13 @@ using System.IO;
 
 namespace ParacletusConsole
 {
-	class ArgumentResult
+	public class CommandArgument
 	{
 		public string Argument;
 		public int Offset;
 		public bool HasQuotes;
 
-		public ArgumentResult(string argument, int offset = 0, bool hasQuotes = false)
+		public CommandArgument(string argument, int offset = 0, bool hasQuotes = false)
 		{
 			Argument = argument;
 			Offset = offset;

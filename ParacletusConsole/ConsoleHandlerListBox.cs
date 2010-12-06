@@ -27,7 +27,7 @@ namespace ParacletusConsole
 			string line = MainForm.InputBox.Text;
 			int offset = MainForm.InputBox.SelectionStart;
 			CommandArguments arguments;
-			ArgumentResult activeArgument;
+			CommandArgument activeArgument;
 			try
 			{
 				arguments = new CommandArguments(line);

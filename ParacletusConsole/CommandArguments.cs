@@ -5,10 +5,10 @@ using System.Text;
 
 namespace ParacletusConsole
 {
-	class CommandArguments
+	public class CommandArguments
 	{
-		public ArgumentResult Command;
-		public ArgumentResult[] Arguments;
+		public CommandArgument Command;
+		public CommandArgument[] Arguments;
 
 		bool ArgumentHasQuotes;
 
@@ -17,16 +17,16 @@ namespace ParacletusConsole
 			ProcessLine(line);
 		}
 
-		void ProcessResult(string currentToken, int currentTokenOffset, List<ArgumentResult> tokens)
+		void ProcessResult(string currentToken, int currentTokenOffset, List<CommandArgument> tokens)
 		{
-			ArgumentResult newResult = new ArgumentResult(currentToken, currentTokenOffset, ArgumentHasQuotes);
+			CommandArgument newResult = new CommandArgument(currentToken, currentTokenOffset, ArgumentHasQuotes);
 			tokens.Add(newResult);
 			ArgumentHasQuotes = false;
 		}
 
 		void ProcessLine(string line)
 		{
-			List<ArgumentResult> tokens = new List<ArgumentResult>();
+			List<CommandArgument> tokens = new List<CommandArgument>();
 			string currentToken = "";
 			int currentTokenOffset = 0;
 			bool quoteMode = false;
@@ -96,7 +96,7 @@ namespace ParacletusConsole
 		{
 			string output = "";
 			bool first = true;
-			foreach (ArgumentResult argumentResult in Arguments)
+			foreach (CommandArgument argumentResult in Arguments)
 			{
 				if (first)
 					first = false;
@@ -110,16 +110,16 @@ namespace ParacletusConsole
 		public string[] GetArgumentString()
 		{
 			List<string> output = new List<string>();
-			foreach (ArgumentResult result in Arguments)
+			foreach (CommandArgument result in Arguments)
 				output.Add(result.Argument);
 			return output.ToArray();
 		}
 
-		public ArgumentResult FindMatchingResult(int offset)
+		public CommandArgument FindMatchingResult(int offset)
 		{
 			if (Command.Match(offset))
 				return Command;
-			foreach (ArgumentResult result in Arguments)
+			foreach (CommandArgument result in Arguments)
 			{
 				if (result.Match(offset))
 					return result;
