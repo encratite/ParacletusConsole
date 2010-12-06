@@ -379,5 +379,19 @@ namespace ParacletusConsole
 			}
 			PrintTable(rows.ToArray());
 		}
+
+		public void DefineAlias(string[] arguments)
+		{
+			if (arguments.Length == 0)
+			{
+				PrintError("You have not provided an alias.");
+				return;
+			}
+			string identifier = arguments[0];
+			List<string> commandStrings = new List<string>(arguments);
+			string command = String.Join(" ", commandStrings.GetRange(1, commandStrings.Count - 1).ToArray());
+			Alias newAlias = new Alias(identifier, command);
+			ProgramConfiguration.Aliases.Add(newAlias);
+		}
 	}
 }

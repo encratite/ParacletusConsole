@@ -54,8 +54,6 @@ namespace ParacletusConsole
 		string ProgramDirectory;
 
 		EmbeddedScripting ScriptingObject;
-
-		List<Alias> Aliases;
 		
 		public ConsoleHandler(ConsoleForm consoleForm)
 		{
@@ -82,7 +80,6 @@ namespace ParacletusConsole
 			IsWindows = IsWindowsOS();
 			PathNames = LoadPathNames();
 			InitialiseCommands();
-			Aliases = new List<Alias>();
 		}
 
 		void UpdateWorkingDirectory()
@@ -258,7 +255,7 @@ namespace ParacletusConsole
 			}
 			else
 			{
-				Alias alias = Aliases.Find(
+				Alias alias = ProgramConfiguration.Aliases.Find(
 					delegate(Alias x)
 					{
 						return x.Identifier == command;
@@ -279,11 +276,6 @@ namespace ParacletusConsole
 					Execute(aliasLine);
 				}
 			}
-		}
-
-		public void AddAlias(string identifier, string command)
-		{
-			Aliases.Add(new Alias(identifier, command));
 		}
 	}
 }

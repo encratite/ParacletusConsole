@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ParacletusConsole
 {
-	class Alias
+	public class Alias
 	{
 		public string
 			Identifier,

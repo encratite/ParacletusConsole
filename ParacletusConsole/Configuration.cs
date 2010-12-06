@@ -37,6 +37,8 @@ namespace ParacletusConsole
 
 		public Nil.FormState FormState;
 
+		public List<Alias> Aliases;
+
 		public Configuration()
 		{
 			SerialisableColour white = new SerialisableColour(255, 255, 255);
@@ -66,6 +68,8 @@ namespace ParacletusConsole
 			LowerCaseMachineName = true;
 
 			FormState = new Nil.FormState();
+
+			Aliases = new List<Alias>();
 		}
 	}
 }

@@ -18,6 +18,7 @@ namespace ParacletusConsole
 			consoleHandler.AddCommand("pwd", null, "print the working directory", consoleHandler.PrintWorkingDirectory);
 			consoleHandler.AddCommand("rm", "<files/directories to be removed>", "remove files or directories recursively", consoleHandler.RemoveFile, -1);
 			consoleHandler.AddCommand("osinfo", null, "retrieve information about the operating system", consoleHandler.OperatingSystemInformation);
+			consoleHandler.AddCommand("alias", "<aliased command and arguments>", "defines an alias for a command", consoleHandler.DefineAlias);
 		}
 	}
 }
