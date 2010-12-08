@@ -20,6 +20,7 @@ namespace ParacletusConsole
 			consoleHandler.AddCommand("osinfo", null, "retrieve information about the operating system", consoleHandler.OperatingSystemInformation);
 			consoleHandler.AddCommand("alias", "<aliased command and arguments>", "defines an alias for a command", consoleHandler.DefineAlias, -1);
 			consoleHandler.AddCommand("unalias", "<alias>", "removes an existing alias", consoleHandler.RemoveAlias, 1);
+			consoleHandler.AddCommand("aliases", null, "print a list of the aliases available", consoleHandler.ListAliases);
 		}
 	}
 }

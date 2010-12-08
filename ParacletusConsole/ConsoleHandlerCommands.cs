@@ -408,5 +408,23 @@ namespace ParacletusConsole
 			else
 				PrintError("Unable to find alias " + identifier);
 		}
+
+		public void ListAliases(string[] arguments)
+		{
+			if (ProgramConfiguration.Aliases.Count == 0)
+			{
+				PrintError("You have not defined any aliases.");
+				return;
+			}
+
+			PrintLineWithColour("Aliases:", ProgramConfiguration.TitleColour);
+			foreach (string identifier in ProgramConfiguration.Aliases.Keys)
+			{
+				PrintWithColour(identifier, ProgramConfiguration.HighlightColour);
+				string command = ProgramConfiguration.Aliases[identifier];
+				if (command.Length > 0)
+					PrintLine(" " + command);
+			}
+		}
 	}
 }
