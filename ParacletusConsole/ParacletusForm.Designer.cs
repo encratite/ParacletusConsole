@@ -49,6 +49,7 @@
 			this.ConsoleBox.TabIndex = 1;
 			this.ConsoleBox.TabStop = false;
 			this.ConsoleBox.Text = "";
+			this.ConsoleBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ConsoleBox_KeyDown);
 			// 
 			// InputBox
 			// 

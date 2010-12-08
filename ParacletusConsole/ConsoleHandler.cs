@@ -270,5 +270,10 @@ namespace ParacletusConsole
 				}
 			}
 		}
+
+		public void OnConsoleBoxTab()
+		{
+			MainForm.InputBox.Focus();
+		}
 	}
 }

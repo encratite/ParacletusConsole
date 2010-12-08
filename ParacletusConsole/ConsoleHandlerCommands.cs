@@ -150,19 +150,33 @@ namespace ParacletusConsole
 			PrintLineWithColour("Running processes:\n", ProgramConfiguration.TitleColour);
 			Process[] processes = Process.GetProcesses();
 			Array.Sort(processes, ProcessComparison);
+
+			List<ColouredString[]> lines = new List<ColouredString[]>();
+
 			foreach (Process process in processes)
 			{
-				PrintWithColour(process.ProcessName, ProgramConfiguration.HighlightColour);
+				string moduleString = "";
+
 				try
 				{
-					Print(" (PID " + process.Id.ToString());
-					Print(", " + process.MainModule.FileName);
+					moduleString = process.MainModule.FileName;
 				}
 				catch (Exception)
 				{
 				}
-				PrintLine(")");
+
+				ColouredString
+					name = new ColouredString(process.ProcessName, ProgramConfiguration.HighlightColour),
+					pid = new ColouredString(process.Id.ToString()),
+					module = new ColouredString(moduleString);
+
+				List<ColouredString> columns = new List<ColouredString>();
+				columns.Add(name);
+				columns.Add(pid);
+				columns.Add(module);
+				lines.Add(columns.ToArray());
 			}
+			PrintTable(lines.ToArray());
 		}
 
 		void TerminateMatchingProcess(Process process)

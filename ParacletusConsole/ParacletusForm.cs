@@ -42,5 +42,10 @@ namespace ParacletusConsole
 		{
 			FormConsoleHandler.OnMainFormLossOfFocus();
 		}
+
+		private void ConsoleBox_KeyDown(object sender, KeyEventArgs e)
+		{
+			FormConsoleHandler.OnConsoleBoxTab();
+		}
 	}
 }
