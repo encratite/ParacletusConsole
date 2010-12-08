@@ -271,9 +271,10 @@ namespace ParacletusConsole
 			}
 		}
 
-		public void OnConsoleBoxTab()
+		public void OnConsoleBoxKey(KeyEventArgs eventArguments)
 		{
-			MainForm.InputBox.Focus();
+			if(eventArguments.KeyValue == '\t')
+				MainForm.InputBox.Focus();
 		}
 	}
 }

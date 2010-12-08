@@ -45,7 +45,7 @@ namespace ParacletusConsole
 
 		private void ConsoleBox_KeyDown(object sender, KeyEventArgs e)
 		{
-			FormConsoleHandler.OnConsoleBoxTab();
+			FormConsoleHandler.OnConsoleBoxKey(e);
 		}
 	}
 }
