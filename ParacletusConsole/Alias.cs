@@ -11,6 +11,10 @@ namespace ParacletusConsole
 			Identifier,
 			Command;
 
+		public Alias()
+		{
+		}
+
 		public Alias(string identifier, string command)
 		{
 			Identifier = identifier;

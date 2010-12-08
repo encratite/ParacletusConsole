@@ -24,12 +24,17 @@ namespace ParacletusConsole
 			return offset >= Offset && offset <= Offset + Argument.Length;
 		}
 
-		public string EscapeArgument()
+		public static string EscapeArgument(string argument)
 		{
-			string output = Argument.Replace("\"", "\\\"");
+			string output = argument.Replace("\"", "\\\"");
 			if (output.IndexOf(' ') != -1)
 				output = "\"" + output + "\"";
 			return output;
+		}
+
+		public string Escape()
+		{
+			return EscapeArgument(Argument);
 		}
 
 		public string CurrentTabTerm()

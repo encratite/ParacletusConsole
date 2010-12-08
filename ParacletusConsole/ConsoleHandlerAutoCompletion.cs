@@ -113,7 +113,7 @@ namespace ParacletusConsole
 		{
 			//extend the argument accordingly
 			CommandArgument modifiedArgument = new CommandArgument(replacement);
-			string middle = modifiedArgument.EscapeArgument();
+			string middle = modifiedArgument.Escape();
 			string left = line.Substring(0, activeArgument.Offset);
 			int rightOffset = activeArgument.Offset + activeArgument.Length();
 			string right = line.Substring(rightOffset);

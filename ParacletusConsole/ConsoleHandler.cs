@@ -261,7 +261,6 @@ namespace ParacletusConsole
 						return x.Identifier == command;
 					}
 				);
-				string newLine = alias.Command;
 				if (alias == null)
 				{
 					if (PerformChangeDirectoryCheck(arguments.Command.Argument))

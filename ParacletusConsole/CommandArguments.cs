@@ -102,7 +102,7 @@ namespace ParacletusConsole
 					first = false;
 				else
 					output += " ";
-				output += argumentResult.EscapeArgument();
+				output += argumentResult.Escape();
 			}
 			return output;
 		}

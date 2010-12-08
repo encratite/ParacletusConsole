@@ -389,9 +389,32 @@ namespace ParacletusConsole
 			}
 			string identifier = arguments[0];
 			List<string> commandStrings = new List<string>(arguments);
-			string command = String.Join(" ", commandStrings.GetRange(1, commandStrings.Count - 1).ToArray());
+			commandStrings = commandStrings.GetRange(1, commandStrings.Count - 1);
+			commandStrings = commandStrings.ConvertAll(
+				delegate(string x)
+				{
+					return CommandArgument.EscapeArgument(x);
+				}
+			);
+			string command = String.Join(" ", commandStrings.ToArray());
 			Alias newAlias = new Alias(identifier, command);
 			ProgramConfiguration.Aliases.Add(newAlias);
+		}
+
+		public void RemoveAlias(string[] arguments)
+		{
+			List<Alias> aliases = ProgramConfiguration.Aliases;
+			string identifier = arguments[0];
+			for(int i = 0; i < aliases.Count; i++)
+			{
+				Alias alias = aliases[i];
+				if (alias.Identifier == identifier)
+				{
+					aliases.RemoveRange(i, 1);
+					return;
+				}
+			}
+			PrintError("Unable to find alias " + identifier);
 		}
 	}
 }
