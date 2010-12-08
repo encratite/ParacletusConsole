@@ -255,24 +255,18 @@ namespace ParacletusConsole
 			}
 			else
 			{
-				Alias alias = ProgramConfiguration.Aliases.Find(
-					delegate(Alias x)
-					{
-						return x.Identifier == command;
-					}
-				);
-				if (alias == null)
+				if (ProgramConfiguration.Aliases.ContainsKey(command))
+				{
+					string aliasLine = ProgramConfiguration.Aliases[command] + " " + arguments.GetQuotedArguments();
+					Execute(aliasLine);
+				}
+				else
 				{
 					if (PerformChangeDirectoryCheck(arguments.Command.Argument))
 						return;
 
 					AttemptProcessExecution(arguments);
 					return;
-				}
-				else
-				{
-					string aliasLine = alias.Command + " " + arguments.GetQuotedArguments();
-					Execute(aliasLine);
 				}
 			}
 		}

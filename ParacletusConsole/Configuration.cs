@@ -37,7 +37,7 @@ namespace ParacletusConsole
 
 		public Nil.FormState FormState;
 
-		public List<Alias> Aliases;
+		public Nil.SerialisableDictionary<string, string> Aliases;
 
 		public Configuration()
 		{
@@ -69,7 +69,7 @@ namespace ParacletusConsole
 
 			FormState = new Nil.FormState();
 
-			Aliases = new List<Alias>();
+			Aliases = new Nil.SerialisableDictionary<string, string>();
 		}
 	}
 }
