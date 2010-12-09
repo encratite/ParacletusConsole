@@ -1,0 +1,39 @@
+At least the following functions  in kernel32.dll will have to be hooked to emulate vim:
+
+FillConsoleOutputAttribute
+FillConsoleOutputCharacterW
+GetConsoleCP
+GetConsoleCursorInfo
+GetConsoleMode
+GetConsoleOutputCP
+GetConsoleScreenBufferInfo
+GetConsoleTitleW
+GetStdHandle
+ReadConsoleInputW
+ReadConsoleOutputW
+ReadConsoleOutputAttribute
+ReadFile
+SetConsoleCtrlHandler
+SetConsoleCursorInfo
+SetConsoleCursorPosition
+SetConsoleMode
+SetConsoleScreenBufferSize
+SetConsoleTextAttribute
+SetConsoleTitleW
+SetStdHandle
+WriteFile
+WriteConsoleW
+WriteConsoleOutputW
+WriteConsoleOutputAttribute
+WriteConsoleOutputCharacterW
+WriteConsoleW
+
+Actually all their A variants, too, because unluckily the A ones no longer call the W ones internally it seems.
+
+Furthermore:
+
+CreateProcess(Ex)
+LoadLibrary(Ex)
+
+Apparently 32-bit processes cannot call CreateRemoteThread in 64-bit processes, but 64-bit processes can call it in both 32-bit and 64-bit processes.
+Furthermore, I also discovered that the 64-bit system DLLs in Windows 7 unluckily have no regular mov edi, edi style hot patching intros so it would be easier to patch the IAT entries in the EXE and all the DLLs it uses/loads.
