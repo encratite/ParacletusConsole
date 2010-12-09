@@ -119,9 +119,8 @@ namespace ParacletusConsole
 			PrintBuffer(buffer, bytesRead);
 		}
 
-		void PromptAndSelect()
+		void Select()
 		{
-			PrintPrompt();
 			MainForm.InputBox.Invoke
 			(
 				(MethodInvoker)delegate
@@ -129,6 +128,12 @@ namespace ParacletusConsole
 					MainForm.InputBox.SelectAll();
 				}
 			);
+		}
+
+		void PromptAndSelect()
+		{
+			PrintPrompt();
+			Select();
 		}
 
 		void ProcessTerminationCheckThread()

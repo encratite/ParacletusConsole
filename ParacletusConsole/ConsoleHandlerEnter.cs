@@ -26,12 +26,10 @@ namespace ParacletusConsole
 			PrintCommandString(line);
 			line = line.Trim();
 			if (line.Length == 0)
-			{
-				PromptAndSelect();
-				return;
-			}
-
-			Execute(line);
+				PrintPrompt();
+			else
+				Execute(line);
+			Select();
 		}
 
 		void ProcessRuntimeEnter()
@@ -42,6 +40,7 @@ namespace ParacletusConsole
 				PrintLine(line);
 				Process.StandardInput.WriteLine(line);
 			}
+			Select();
 		}
 
 		void AttemptProcessExecution(CommandArguments arguments)
