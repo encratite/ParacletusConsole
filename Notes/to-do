@@ -1,5 +1,6 @@
 To do:
 
+I actually regret implementing those $$ and # codes, that should have all been done programmatically really... using the embedded scripting
 Support vim, ssh etc - i.e. implement full Windows console buffer emulation
 Add a browsable command history
 Make keybinds like escape, tab and the suspend key configurable
