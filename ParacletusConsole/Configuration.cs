@@ -21,10 +21,8 @@ namespace ParacletusConsole
 			ErrorColour,
 			WarningColour,
 			BackgroundColour,
-			ConsoleBoxSelectionBackgroundColour,
-
 			InputFieldBackgroundColour,
-			InputFieldSelectionBackgroundColour,
+			SelectionBackgroundColour,
 
 			TitleColour,
 			HighlightColour,
@@ -44,9 +42,7 @@ namespace ParacletusConsole
 
 		public Configuration()
 		{
-			SerialisableColour
-				white = new SerialisableColour(255, 255, 255),
-				selectionColour = new SerialisableColour(177, 136, 66);
+			SerialisableColour white = new SerialisableColour(255, 255, 255);
 
 			Prompt = "#ff57aaff[ #ffffc05e$User$#ffffd4b2@#ffffc05e$MachineName$ #ff57aaff| #ffcacaca$CurrentWorkingDirectory$ #ff57aaff] ";
 
@@ -58,11 +54,8 @@ namespace ParacletusConsole
 			ErrorColour = new SerialisableColour(255, 0, 0);
 			WarningColour = new SerialisableColour(0, 255, 255);
 			BackgroundColour = new SerialisableColour(0, 0, 0);
-
-			ConsoleBoxSelectionBackgroundColour = selectionColour;
-
 			InputFieldBackgroundColour = new SerialisableColour(64, 64, 64);
-			InputFieldSelectionBackgroundColour = selectionColour;
+			SelectionBackgroundColour = new SerialisableColour(177, 136, 66);
 
 			TitleColour = new SerialisableColour(85, 255, 161);
 			HighlightColour = new SerialisableColour(197, 128, 255);

@@ -13,6 +13,7 @@ namespace ParacletusConsole
 		{
 			lock (this)
 			{
+				MainForm.ConsoleBox.SelectionLength = 0;
 				if (Process == null)
 					ProcessRegularEnter();
 				else
